@@ -1,5 +1,4 @@
-
-import Groq from "groq";
+import { Groq } from "groq";
 import { companyContextPrompt, generateTopicPrompt } from "@/data/companyContext";
 
 interface PostGenerationParams {
@@ -14,9 +13,8 @@ interface PostGenerationParams {
 
 // Initialize the Groq client
 // Note: Users will need to set their API key
-const groq = Groq({
-  apiKey: process.env.GROQ_API_KEY || "your-groq-api-key", // Replace with actual API key
-});
+const apiKey = process.env.GROQ_API_KEY || "your-groq-api-key"; // Replace with actual API key
+const groq = new Groq(apiKey);
 
 export async function generatePost(params: PostGenerationParams): Promise<string> {
   try {
