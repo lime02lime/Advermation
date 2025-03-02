@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -14,7 +13,6 @@ interface NewsItem {
   source: string;
 }
 
-// Sample mock data for when the API fails
 const mockNewsData: NewsItem[] = [
   {
     newsID: 'mock-news-1',
@@ -79,7 +77,7 @@ const IndustryNews: React.FC = () => {
         toast({
           title: "No news items found",
           description: "Using demo data instead. Please check your database.",
-          variant: "warning"
+          variant: "default"
         });
       }
     } catch (error) {
