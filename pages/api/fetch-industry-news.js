@@ -21,6 +21,14 @@ export default async function handler(req, res) {
   }
 
   try {
+    // Check if AWS credentials are available
+    if (!process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY) {
+      console.error('AWS credentials are missing');
+      return res.status(500).json({ 
+        error: 'AWS credentials are missing. Please set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY environment variables.' 
+      });
+    }
+
     const params = {
       TableName: TABLE_NAME,
       Limit: 10,

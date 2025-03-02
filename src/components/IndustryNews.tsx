@@ -1,9 +1,10 @@
+
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { Newspaper, RefreshCw, AlertCircle } from 'lucide-react';
+import { Newspaper, RefreshCw, AlertCircle, Info } from 'lucide-react';
 
 interface NewsItem {
   newsID: string;
@@ -44,9 +45,11 @@ const IndustryNews: React.FC = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [useMockData, setUseMockData] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [errorDetails, setErrorDetails] = useState<string | null>(null);
 
   const fetchNews = async () => {
     setError(null);
+    setErrorDetails(null);
     try {
       setLoading(true);
       console.log('Fetching news from API...');
@@ -61,7 +64,15 @@ const IndustryNews: React.FC = () => {
       if (!response.ok) {
         const errorText = await response.text();
         console.error('API response not OK:', response.status, errorText);
-        throw new Error(`Failed to fetch industry news: ${response.status} ${errorText}`);
+        
+        // Check if it's a server error (500)
+        if (response.status === 500) {
+          setError("AWS DynamoDB Connection Error");
+          setErrorDetails("Unable to connect to the news database. Please check AWS credentials and database configuration.");
+          throw new Error(`Failed to fetch industry news: ${response.status} ${errorText}`);
+        } else {
+          throw new Error(`Failed to fetch industry news: ${response.status} ${errorText}`);
+        }
       }
 
       const data = await response.json();
@@ -185,7 +196,13 @@ const IndustryNews: React.FC = () => {
       {error && (
         <div className="px-6 py-2 flex items-center text-xs text-amber-800 bg-amber-50 border-t border-b border-amber-100">
           <AlertCircle className="h-3 w-3 mr-1" />
-          <span>Error: {error}</span>
+          <span>{error}</span>
+        </div>
+      )}
+      {errorDetails && (
+        <div className="px-6 py-2 flex items-center text-xs text-blue-800 bg-blue-50 border-b border-blue-100">
+          <Info className="h-3 w-3 mr-1" />
+          <span>{errorDetails}</span>
         </div>
       )}
       <CardContent className="px-4 py-2">
