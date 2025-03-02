@@ -46,32 +46,30 @@ const Index = () => {
             <div className="flex flex-col md:flex-row gap-8 pt-8">
               {/* Main Content Area */}
               <div className="flex-1">
-                <div className="flex flex-col items-center space-y-8">
-                  <div className="w-full text-center mb-8 animate-fade-in">
-                    <h1 className="text-4xl font-bold tracking-tight text-balance text-[#2b4a9a]">
-                      Internal Content Generator
-                    </h1>
-                    <p className="mt-4 text-lg text-[#71436d] max-w-xl mx-auto text-balance">
-                      Create engaging social media content for Fleete with just a click
-                    </p>
-                  </div>
-                  
-                  <Card className="w-full border-0 shadow-lg overflow-hidden">
-                    <CardContent className="p-6">
-                      <GeneratorForm onPostGenerated={handlePostGenerated} />
-                    </CardContent>
-                  </Card>
-                  
-                  <div ref={postDisplayRef} className="pt-4 w-full">
-                    <PostDisplay post={generatedPost} />
-                  </div>
-                  
-                  <Separator className="max-w-md my-6" />
+                <div className="w-full text-center mb-8 animate-fade-in">
+                  <h1 className="text-4xl font-bold tracking-tight text-balance text-[#2b4a9a]">
+                    Internal Content Generator
+                  </h1>
+                  <p className="mt-4 text-lg text-[#71436d] max-w-xl mx-auto text-balance">
+                    Create engaging social media content for Fleete with just a click
+                  </p>
                 </div>
+                
+                <Card className="w-full border-0 shadow-lg overflow-hidden">
+                  <CardContent className="p-6">
+                    <GeneratorForm onPostGenerated={handlePostGenerated} />
+                  </CardContent>
+                </Card>
+                
+                <div ref={postDisplayRef} className="pt-4 w-full">
+                  <PostDisplay post={generatedPost} />
+                </div>
+                
+                <Separator className="max-w-md mx-auto my-6" />
               </div>
               
-              {/* News Sidebar */}
-              <div className="w-full md:w-80 lg:w-96 h-fit sticky top-4">
+              {/* News Sidebar - Aligned with top content */}
+              <div className="w-full md:w-80 lg:w-96 h-fit">
                 <IndustryNews />
               </div>
             </div>
