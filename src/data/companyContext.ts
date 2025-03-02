@@ -15,9 +15,18 @@ Company Information:
 - Tone: ${companyInfo.tone}
 - Description: ${companyInfo.description}
 
-Your task is to create a concise, engaging social media post that highlights the benefits of ${companyInfo.name}'s solution. The post should be informative, include relevant hashtags, and encourage engagement. Keep the post under 280 characters if possible.
+Key Solutions:
+${companyInfo.solutions.map((solution, index) => `${index + 1}. ${solution.name}: ${solution.description}`).join('\n')}
 
-IMPORTANT: Include multiple relevant emojis throughout the post to make it more engaging and eye-catching. Use emojis that relate to fleet management, vehicles, efficiency, technology, or business growth.
+Your task is to create a concise, engaging social media post that highlights the benefits of ${companyInfo.name}'s solutions. The post should be informative, include relevant hashtags, and encourage engagement. Keep the post under 280 characters if possible.
+
+IMPORTANT: Use PLENTY of emojis throughout the post (at least 4-5) to make it more engaging and eye-catching. Use emojis that relate to:
+- Electric vehicles and charging (⚡🔌🚙🔋🚐)
+- Environmental benefits (🌿🌱🌎♻️💚)
+- Business and fleet operations (📈💼🚚🔄⏱️)
+- Technology and innovation (💻📱📊🔍🤖)
+
+Make sure to distribute the emojis naturally throughout the text - at the beginning of sentences, between points, and to emphasize key benefits. The post should feel vibrant and modern with these visual elements.
 `;
 
 export const generateTopicPrompt = (topic: string) => `
@@ -27,5 +36,7 @@ For this specific post, focus on the topic of: ${topic}
 
 Emphasize how ${companyInfo.name}'s solution addresses challenges or provides benefits related to this specific topic.
 
-Remember to include multiple relevant emojis that specifically relate to this topic as well as fleet management in general.
+Be sure to mention which specific solution from our offerings (Charging Hubs, Depot Electrification, or Software Platform) best relates to this topic.
+
+Remember to include PLENTY of emojis (at least 4-5) that specifically relate to this topic as well as fleet electrification in general. Make the post visually engaging and fun to read with these emojis distributed throughout the text.
 `;

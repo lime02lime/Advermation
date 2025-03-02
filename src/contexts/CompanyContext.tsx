@@ -3,12 +3,18 @@ import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { companyInfo as defaultCompanyInfo } from '@/data/companyInfo';
 
 // Define company information type
+interface Solution {
+  name: string;
+  description: string;
+}
+
 interface CompanyInfo {
   name: string;
   description: string;
   industry: string;
   targetAudience: string;
   uniqueSellingPoints: string[];
+  solutions?: Solution[];
   tone: string;
 }
 

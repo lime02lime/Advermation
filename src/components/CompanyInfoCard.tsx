@@ -26,7 +26,7 @@ const CompanyInfoCard: React.FC = () => {
         </div>
       </CardHeader>
       
-      <CardContent className={`pt-0 transition-all duration-300 ease-in-out ${isExpanded ? 'max-h-[500px]' : 'max-h-0'} overflow-hidden`}>
+      <CardContent className={`pt-0 transition-all duration-300 ease-in-out ${isExpanded ? 'max-h-[600px]' : 'max-h-0'} overflow-hidden`}>
         <div className="space-y-3 text-sm">
           <div>
             <div className="text-xs font-medium text-muted-foreground mb-1">Industry</div>
@@ -45,6 +45,18 @@ const CompanyInfoCard: React.FC = () => {
                 <Badge key={index} variant="secondary" className="font-normal text-xs">
                   {point}
                 </Badge>
+              ))}
+            </div>
+          </div>
+          
+          <div>
+            <div className="text-xs font-medium text-muted-foreground mb-1">Solutions</div>
+            <div className="space-y-2 mt-1">
+              {companyInfo.solutions?.map((solution, index) => (
+                <div key={index} className="p-2 bg-secondary/20 rounded-md">
+                  <div className="font-medium">{solution.name}</div>
+                  <div className="text-xs text-muted-foreground">{solution.description}</div>
+                </div>
               ))}
             </div>
           </div>
