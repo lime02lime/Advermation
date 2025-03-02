@@ -1,5 +1,5 @@
 
-import { Groq } from "groq";
+import Groq from "groq";
 import { companyContextPrompt, generateTopicPrompt } from "@/data/companyContext";
 
 interface PostGenerationParams {
