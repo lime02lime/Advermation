@@ -1,5 +1,4 @@
 
-import { Groq } from "groq-sdk";
 import { companyContextPrompt, generateTopicPrompt } from "@/data/companyContext";
 
 interface PostGenerationParams {
@@ -12,16 +11,13 @@ interface PostGenerationParams {
   topic?: string;
 }
 
-// Initialize the Groq client
-// Note: Users will need to set their API key
-const groq = new Groq({
-  apiKey: process.env.GROQ_API_KEY || "your-groq-api-key", // Replace with actual API key
-});
-
 export async function generatePost(params: PostGenerationParams): Promise<string> {
   try {
+    // Get the API key from localStorage or environment
+    const groqApiKey = localStorage.getItem('groqApiKey') || process.env.GROQ_API_KEY;
+
     // If no API key is provided, fall back to mock data
-    if (!process.env.GROQ_API_KEY || process.env.GROQ_API_KEY === "your-groq-api-key") {
+    if (!groqApiKey || groqApiKey === "your-groq-api-key") {
       console.warn("No Groq API key provided. Using mock data instead.");
       return generateMockPost(params);
     }
@@ -30,24 +26,38 @@ export async function generatePost(params: PostGenerationParams): Promise<string
       ? generateTopicPrompt(params.topic)
       : companyContextPrompt;
 
-    // Make sure we're using the Groq API correctly
-    const completion = await groq.chat.completions.create({
-      messages: [
-        {
-          role: "system",
-          content: "You are a social media marketing expert that creates engaging content for businesses."
-        },
-        {
-          role: "user",
-          content: prompt
-        }
-      ],
-      model: "llama3-8b-8192",
-      temperature: 0.7,
-      max_tokens: 300,
+    // Use fetch API to call Groq
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${groqApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'llama3-8b-8192',
+        messages: [
+          {
+            role: 'system',
+            content: 'You are a social media marketing expert that creates engaging content for businesses.'
+          },
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        temperature: 0.7,
+        max_tokens: 300,
+      }),
     });
 
-    return completion.choices[0]?.message?.content || "Unable to generate post. Please try again.";
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Groq API error:", errorData);
+      throw new Error(`Groq API returned ${response.status}: ${JSON.stringify(errorData)}`);
+    }
+
+    const data = await response.json();
+    return data.choices[0]?.message?.content || "Unable to generate post. Please try again.";
   } catch (error) {
     console.error("Error generating post with Groq:", error);
     return generateMockPost(params);
