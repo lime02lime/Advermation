@@ -62,6 +62,12 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				fleete: {
+					blue: '#2b4a9a',
+					purple: '#71436d',
+					brightpurple: '#8847ea',
+					lightblue: '#9aedff',
 				}
 			},
 			borderRadius: {
