@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { Newspaper, RefreshCw } from 'lucide-react';
+import { Newspaper, RefreshCw, AlertCircle } from 'lucide-react';
 
 interface NewsItem {
   newsID: string;
@@ -45,10 +45,14 @@ const IndustryNews: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [useMockData, setUseMockData] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchNews = async () => {
+    setError(null);
     try {
       setLoading(true);
+      console.log('Fetching news from API...');
+      
       const response = await fetch('/api/fetch-industry-news', {
         method: 'POST',
         headers: {
@@ -57,14 +61,30 @@ const IndustryNews: React.FC = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to fetch industry news');
+        const errorText = await response.text();
+        console.error('API response not OK:', response.status, errorText);
+        throw new Error(`Failed to fetch industry news: ${response.status} ${errorText}`);
       }
 
       const data = await response.json();
-      setNewsItems(data.items || []);
-      setUseMockData(false);
+      console.log('News data received:', data);
+      
+      if (data.items && data.items.length > 0) {
+        setNewsItems(data.items);
+        setUseMockData(false);
+      } else {
+        console.log('No news items found, using mock data');
+        setNewsItems(mockNewsData);
+        setUseMockData(true);
+        toast({
+          title: "No news items found",
+          description: "Using demo data instead. Please check your database.",
+          variant: "warning"
+        });
+      }
     } catch (error) {
       console.error('Error fetching industry news:', error);
+      setError(error instanceof Error ? error.message : 'Unknown error');
       // Fall back to mock data when the API fails
       setNewsItems(mockNewsData);
       setUseMockData(true);
@@ -92,7 +112,7 @@ const IndustryNews: React.FC = () => {
 
   useEffect(() => {
     fetchNews();
-  }, [toast]);
+  }, []);
 
   if (loading && !refreshing) {
     return (
@@ -164,6 +184,12 @@ const IndustryNews: React.FC = () => {
           Refresh
         </Button>
       </CardHeader>
+      {error && (
+        <div className="px-6 py-2 flex items-center text-xs text-amber-800 bg-amber-50 border-t border-b border-amber-100">
+          <AlertCircle className="h-3 w-3 mr-1" />
+          <span>Error: {error}</span>
+        </div>
+      )}
       <CardContent className="px-4 py-2">
         <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2">
           {newsItems.map((item, index) => (
