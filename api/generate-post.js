@@ -41,21 +41,39 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: 'API key not configured' });
     }
 
-    // Build the prompt based on whether a topic was provided
+    // Build the prompt based on the same structure as companyContext.ts
     let prompt = `
-    Create a social media post for ${companyName}, a ${industry} company.
-    
+    You are a social media marketing expert creating engaging content for ${companyName}, a ${industry} company.
+
     Company Information:
-    - Description: ${companyDescription}
+    - Name: ${companyName}
+    - Industry: ${industry}
     - Target Audience: ${targetAudience}
+    - Unique Selling Points:
+      ${uniqueSellingPoints.map((point, index) => `${index + 1}. ${point}`).join('\n      ')}
     - Tone: ${tone}
-    - Unique Selling Points: ${uniqueSellingPoints.join(', ')}
-    
-    The post should be concise, engaging, and include appropriate hashtags. Use a few emojis to make it more engaging.
+    - Description: ${companyDescription}
+
+    Your task is to create a concise, engaging social media post that highlights the benefits of ${companyName}'s solutions. The post should be informative, include relevant hashtags, and encourage engagement. Keep the post under 280 characters if possible.
+
+    IMPORTANT: Use a few emojis throughout the post (around 4-5) to make it more engaging and eye-catching. Use emojis that relate to:
+    - Electric vehicles and charging (⚡🔌🚙🔋🚐)
+    - Environmental benefits (🌿🌱🌎♻️💚)
+    - Business and fleet operations (📈💼🚚🔄⏱️)
+    - Technology and innovation (💻📱📊🔍🤖)
+    - Company success and forward reach (🔥🌟🚀🏆📈)
+
+    Make sure to distribute the emojis naturally throughout the text. You can put them at the very beginning and/or after sentences (after the punctuation marks). The post should feel vibrant and modern with these visual elements.
     `;
 
     if (topic) {
-      prompt += `\n\nThis post should focus specifically on the topic of: ${topic}`;
+      prompt += `\n\nFor this specific post, focus on the topic of: ${topic}
+
+      Emphasize how ${companyName}'s solution addresses challenges or provides benefits related to this specific topic.
+      
+      Be sure to mention which specific solution from our offerings (Charging Hubs, Depot Electrification, or Software Platform) best relates to this topic.
+      
+      Remember to include PLENTY of emojis (at least 4-5) that specifically relate to this topic as well as fleet electrification in general. Make the post visually engaging and fun to read with these emojis distributed throughout the text.`;
     }
 
     // Call Groq API
@@ -83,11 +101,20 @@ export default async function handler(req, res) {
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      console.error("Groq API error:", errorData);
+      const errorData = await response.text();
+      let errorMessage;
+      
+      try {
+        const jsonError = JSON.parse(errorData);
+        errorMessage = JSON.stringify(jsonError);
+      } catch (e) {
+        errorMessage = errorData.substring(0, 200);
+      }
+      
+      console.error("Groq API error:", errorMessage);
       return res.status(response.status).json({ 
         error: `API returned ${response.status}`, 
-        details: errorData 
+        details: errorMessage 
       });
     }
 
