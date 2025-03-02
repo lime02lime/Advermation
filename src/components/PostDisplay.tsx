@@ -58,7 +58,7 @@ const PostDisplay: React.FC<PostDisplayProps> = ({ post }) => {
       <CardContent className="p-6">
         <div
           ref={postRef}
-          className="font-medium text-balance text-[15px] leading-relaxed"
+          className="font-medium text-balance text-[15px] leading-relaxed text-center"
         >
           {post}
         </div>
