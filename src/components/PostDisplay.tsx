@@ -67,12 +67,15 @@ const PostDisplay: React.FC<PostDisplayProps> = ({ post }) => {
 
   return (
     <Card className="w-full max-w-xl mx-auto bg-card/50 backdrop-blur-sm border border-border/50 shadow-soft transition-all duration-300 animate-slide-up">
-      <CardContent className="p-6 flex justify-center items-center">
+      <CardContent className="p-6 flex flex-col items-center">
+        <div className="w-full mb-2 text-xs text-[#71436d] text-left">
+          <span className="italic">You can edit this text directly</span>
+        </div>
         <div
           ref={editableRef}
           contentEditable
           onInput={handleTextChange}
-          className="font-medium text-balance text-[15px] leading-relaxed text-center w-full focus:outline-none focus:ring-1 focus:ring-primary/20 rounded p-2"
+          className="font-medium text-balance text-[15px] leading-relaxed text-center w-full focus:outline-none focus:ring-1 focus:ring-primary/20 rounded p-2 bg-white"
           suppressContentEditableWarning={true}
         >
           {post}
