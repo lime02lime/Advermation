@@ -41,8 +41,8 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: 'API key not configured' });
     }
 
-    // Build the prompt based on the same structure as companyContext.ts
-    let prompt = `
+    // Build the system message with company context
+    const systemMessage = `
     You are a social media marketing expert creating engaging content for ${companyName}, a ${industry} company.
 
     Company Information:
@@ -53,31 +53,29 @@ export default async function handler(req, res) {
       ${uniqueSellingPoints.map((point, index) => `${index + 1}. ${point}`).join('\n      ')}
     - Tone: ${tone}
     - Description: ${companyDescription}
-
-    Your task is to create a concise, engaging social media post that highlights the benefits of ${companyName}'s solutions. The post should be informative, include relevant hashtags, and encourage engagement. Keep the post under 200 characters if possible.
-
-    IMPORTANT: Use a few emojis throughout the post (around 4-5) to make it more engaging and eye-catching. Use emojis that relate to:
+    
+    Use a few emojis throughout the post (around 4-5) to make it more engaging and eye-catching. Use emojis that relate to:
     - Electric vehicles and charging (⚡🔌🚙🔋🚐)
     - Environmental benefits (🌿🌱🌎♻️💚)
     - Business and fleet operations (📈💼🚚🔄⏱️)
     - Technology and innovation (💻📱📊🔍🤖)
     - Company success and forward reach (🔥🌟🚀🏆📈)
+    
+    Make sure to distribute the emojis naturally throughout the text. You can put them at the very beginning and/or after sentences (IMPORTANT: emojis should be AFTER the punctuation marks).
+    Only return the blog post text without any additional explanations.`;
 
-    Make sure to distribute the emojis naturally throughout the text. You can put them at the very beginning and/or after sentences (IMPORTANT: emojis should be AFTER the punctuation marks). The post should feel vibrant and modern with these visual elements.
-    Make sure to return ONLY the blog post text and nothing else.
-    `;
+    // Build the user prompt for the specific post request
+    let userPrompt = `Create a concise, engaging social media post that highlights the benefits of ${companyName}'s solutions. The post should be informative, include relevant hashtags, and encourage engagement. Keep the post under 200 characters if possible.`;
 
     if (topic) {
-      prompt += `\n\nFor this specific post, focus on the topic of: ${topic}
+      userPrompt += `\n\nFor this specific post, focus on the topic of: ${topic}
 
       Emphasize how ${companyName}'s solution addresses challenges or provides benefits related to this specific topic.
       
-      Be sure to mention which specific solution from our offerings (Charging Hubs, Depot Electrification, or Software Platform) best relates to this topic.
-      
-      Remember to include a few emojis (around 3-4) that specifically relate to this topic as well as fleet electrification in general. Make the post visually engaging and fun to read with these emojis distributed throughout the text.`;
+      Be sure to mention which specific solution from our offerings (Charging Hubs, Depot Electrification, or Software Platform) best relates to this topic.`;
     }
 
-    // Call Groq API
+    // Call Groq API with separated messages
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -89,11 +87,11 @@ export default async function handler(req, res) {
         messages: [
           {
             role: 'system',
-            content: 'You are a social media marketing expert that creates engaging content for businesses.'
+            content: systemMessage
           },
           {
             role: 'user',
-            content: prompt
+            content: userPrompt
           }
         ],
         temperature: 0.7,
