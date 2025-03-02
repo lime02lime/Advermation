@@ -3,7 +3,8 @@ import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
-import { Newspaper } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Newspaper, RefreshCw } from 'lucide-react';
 
 interface NewsItem {
   newsID: string;
@@ -17,43 +18,54 @@ const IndustryNews: React.FC = () => {
   const { toast } = useToast();
   const [newsItems, setNewsItems] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const fetchNews = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('/api/fetch-industry-news', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch industry news');
+      }
+
+      const data = await response.json();
+      setNewsItems(data.items || []);
+    } catch (error) {
+      console.error('Error fetching industry news:', error);
+      toast({
+        title: "Failed to load industry news",
+        description: "Please try again later.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await fetchNews();
+    toast({
+      title: "News refreshed",
+      description: "Latest industry news has been loaded."
+    });
+  };
 
   useEffect(() => {
-    const fetchNews = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch('/api/fetch-industry-news', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch industry news');
-        }
-
-        const data = await response.json();
-        setNewsItems(data.items || []);
-      } catch (error) {
-        console.error('Error fetching industry news:', error);
-        toast({
-          title: "Failed to load industry news",
-          description: "Please try again later.",
-          variant: "destructive"
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchNews();
   }, [toast]);
 
-  if (loading) {
+  if (loading && !refreshing) {
     return (
       <Card className="w-full border shadow-sm">
-        <CardHeader className="pb-2">
+        <CardHeader className="pb-2 flex flex-row items-center justify-between">
           <CardTitle className="text-lg flex items-center">
             <Newspaper className="h-4 w-4 mr-2" />
             Industry News
@@ -73,14 +85,23 @@ const IndustryNews: React.FC = () => {
     );
   }
 
-  if (newsItems.length === 0) {
+  if (newsItems.length === 0 && !loading) {
     return (
       <Card className="w-full border shadow-sm">
-        <CardHeader className="pb-2">
+        <CardHeader className="pb-2 flex flex-row items-center justify-between">
           <CardTitle className="text-lg flex items-center">
             <Newspaper className="h-4 w-4 mr-2" />
             Industry News
           </CardTitle>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={handleRefresh}
+            disabled={refreshing}
+          >
+            <RefreshCw className="h-3.5 w-3.5 mr-1" />
+            Refresh
+          </Button>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground">No industry news available at the moment.</p>
@@ -91,11 +112,24 @@ const IndustryNews: React.FC = () => {
 
   return (
     <Card className="w-full border shadow-sm">
-      <CardHeader className="pb-2">
+      <CardHeader className="pb-2 flex flex-row items-center justify-between">
         <CardTitle className="text-lg flex items-center">
           <Newspaper className="h-4 w-4 mr-2" />
           Industry News
         </CardTitle>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={handleRefresh}
+          disabled={refreshing}
+        >
+          {refreshing ? (
+            <RefreshCw className="h-3.5 w-3.5 mr-1 animate-spin" />
+          ) : (
+            <RefreshCw className="h-3.5 w-3.5 mr-1" />
+          )}
+          Refresh
+        </Button>
       </CardHeader>
       <CardContent className="px-4 py-2">
         <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2">
