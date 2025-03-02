@@ -30,6 +30,7 @@ export async function generatePost(params: PostGenerationParams): Promise<string
       ? generateTopicPrompt(params.topic)
       : companyContextPrompt;
 
+    // Make sure we're using the Groq API correctly
     const completion = await groq.chat.completions.create({
       messages: [
         {
