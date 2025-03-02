@@ -3,6 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import Header from '@/components/Header';
 import GeneratorForm from '@/components/GeneratorForm';
 import PostDisplay from '@/components/PostDisplay';
+import IndustryNews from '@/components/IndustryNews';
 import { CompanyProvider } from '@/contexts/CompanyContext';
 import { Separator } from '@/components/ui/separator';
 import { Card, CardContent } from '@/components/ui/card';
@@ -41,34 +42,44 @@ const Index = () => {
         <Header className="bg-white shadow-sm" />
         
         <main className="flex-1 px-4 pb-8">
-          <div className="max-w-2xl mx-auto w-full">
-            <div className="flex flex-col items-center space-y-8 pt-8">
-              <div className="w-full text-center mb-8 animate-fade-in">
-                <h1 className="text-4xl font-bold tracking-tight text-balance text-[#2b4a9a]">
-                  Internal Content Generator
-                </h1>
-                <p className="mt-4 text-lg text-[#71436d] max-w-xl mx-auto text-balance">
-                  Create engaging social media content for Fleete with just a click
-                </p>
+          <div className="max-w-6xl mx-auto w-full">
+            <div className="flex flex-col md:flex-row gap-8 pt-8">
+              {/* Main Content Area */}
+              <div className="flex-1">
+                <div className="flex flex-col items-center space-y-8">
+                  <div className="w-full text-center mb-8 animate-fade-in">
+                    <h1 className="text-4xl font-bold tracking-tight text-balance text-[#2b4a9a]">
+                      Internal Content Generator
+                    </h1>
+                    <p className="mt-4 text-lg text-[#71436d] max-w-xl mx-auto text-balance">
+                      Create engaging social media content for Fleete with just a click
+                    </p>
+                  </div>
+                  
+                  <Card className="w-full border-0 shadow-lg overflow-hidden">
+                    <CardContent className="p-6">
+                      <GeneratorForm onPostGenerated={handlePostGenerated} />
+                    </CardContent>
+                  </Card>
+                  
+                  <div ref={postDisplayRef} className="pt-4 w-full">
+                    <PostDisplay post={generatedPost} />
+                  </div>
+                  
+                  <Separator className="max-w-md my-6" />
+                </div>
               </div>
               
-              <Card className="w-full border-0 shadow-lg overflow-hidden">
-                <CardContent className="p-6">
-                  <GeneratorForm onPostGenerated={handlePostGenerated} />
-                </CardContent>
-              </Card>
-              
-              <div ref={postDisplayRef} className="pt-4 w-full">
-                <PostDisplay post={generatedPost} />
+              {/* News Sidebar */}
+              <div className="w-full md:w-80 lg:w-96 h-fit sticky top-4">
+                <IndustryNews />
               </div>
-              
-              <Separator className="max-w-md my-6" />
             </div>
           </div>
         </main>
         
         <footer className="py-4 mt-auto border-t border-border/40 text-center text-sm text-[#2b4a9a] bg-white">
-          <div className="max-w-2xl mx-auto px-4">
+          <div className="max-w-6xl mx-auto px-4">
             <p>© {new Date().getFullYear()} Fleete Internal Tools - PostGenius</p>
           </div>
         </footer>
