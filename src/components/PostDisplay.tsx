@@ -4,7 +4,7 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
-import { Share } from 'lucide-react';
+import { Share, Image } from 'lucide-react';
 
 interface PostDisplayProps {
   post: string | null;
@@ -14,6 +14,8 @@ const PostDisplay: React.FC<PostDisplayProps> = ({ post }) => {
   const { toast } = useToast();
   const [copied, setCopied] = useState(false);
   const [editedPost, setEditedPost] = useState<string>('');
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const editableRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -23,6 +25,8 @@ const PostDisplay: React.FC<PostDisplayProps> = ({ post }) => {
     }
     // Reset copied state when post changes
     setCopied(false);
+    // Reset image when post changes
+    setImageUrl(null);
   }, [post]);
 
   const handleCopy = async () => {
@@ -55,6 +59,42 @@ const PostDisplay: React.FC<PostDisplayProps> = ({ post }) => {
     }
   };
 
+  const handleGenerateImage = async () => {
+    if (!editedPost) return;
+
+    setIsGeneratingImage(true);
+    try {
+      // Call the image generation API
+      const response = await fetch('/api/generate-image', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ prompt: editedPost }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate image');
+      }
+
+      const data = await response.json();
+      setImageUrl(data.imageUrl);
+      toast({
+        title: "Image Generated",
+        description: "Your image has been successfully generated!"
+      });
+    } catch (error) {
+      toast({
+        title: "Image Generation Failed",
+        description: "Could not generate an image. Please try again.",
+        variant: "destructive"
+      });
+      console.error(error);
+    } finally {
+      setIsGeneratingImage(false);
+    }
+  };
+
   if (!post) {
     return (
       <Card className="w-full max-w-2xl mx-auto bg-white border border-border/50 shadow-soft min-h-[200px] flex items-center justify-center text-muted-foreground animate-slide-up">
@@ -80,9 +120,30 @@ const PostDisplay: React.FC<PostDisplayProps> = ({ post }) => {
         >
           {post}
         </div>
+
+        {/* Display generated image if available */}
+        {imageUrl && (
+          <div className="mt-4 max-w-full">
+            <img 
+              src={imageUrl} 
+              alt="Generated based on post text" 
+              className="max-w-full h-auto rounded-md shadow-md"
+            />
+          </div>
+        )}
       </CardContent>
       <Separator />
-      <CardFooter className="p-4 flex justify-end">
+      <CardFooter className="p-4 flex justify-end gap-2">
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={handleGenerateImage}
+          disabled={isGeneratingImage || !editedPost}
+          className="transition-all duration-300"
+        >
+          <Image className="h-4 w-4 mr-2" />
+          {isGeneratingImage ? 'Generating...' : 'Generate Image'}
+        </Button>
         <Button
           variant="secondary"
           size="sm"
