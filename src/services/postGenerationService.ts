@@ -1,4 +1,3 @@
-
 import { companyContextPrompt, generateTopicPrompt } from "@/data/companyContext";
 
 interface PostGenerationParams {
@@ -13,53 +12,25 @@ interface PostGenerationParams {
 
 export async function generatePost(params: PostGenerationParams): Promise<string> {
   try {
-    // First check for environment variable (Vercel), then fallback to localStorage (for local development)
-    const groqApiKey = import.meta.env.VITE_GROQ_API_KEY || localStorage.getItem('groqApiKey');
-
-    // If no API key is provided, fall back to mock data
-    if (!groqApiKey || groqApiKey === "your-groq-api-key") {
-      console.warn("No Groq API key provided. Using mock data instead.");
-      return generateMockPost(params);
-    }
-
-    const prompt = params.topic 
-      ? generateTopicPrompt(params.topic)
-      : companyContextPrompt;
-
-    // Use fetch API to call Groq
-    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    // Call our serverless function
+    const response = await fetch('/api/generate-post', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${groqApiKey}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        model: 'llama3-8b-8192',
-        messages: [
-          {
-            role: 'system',
-            content: 'You are a social media marketing expert that creates engaging content for businesses.'
-          },
-          {
-            role: 'user',
-            content: prompt
-          }
-        ],
-        temperature: 0.7,
-        max_tokens: 300,
-      }),
+      body: JSON.stringify(params),
     });
 
     if (!response.ok) {
       const errorData = await response.json();
-      console.error("Groq API error:", errorData);
-      throw new Error(`Groq API returned ${response.status}: ${JSON.stringify(errorData)}`);
+      console.error("API error:", errorData);
+      throw new Error(`API returned ${response.status}: ${JSON.stringify(errorData)}`);
     }
 
     const data = await response.json();
-    return data.choices[0]?.message?.content || "Unable to generate post. Please try again.";
+    return data.post;
   } catch (error) {
-    console.error("Error generating post with Groq:", error);
+    console.error("Error generating post:", error);
     return generateMockPost(params);
   }
 }
