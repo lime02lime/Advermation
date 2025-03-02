@@ -11,7 +11,7 @@ const CompanyInfoCard: React.FC = () => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
-    <Card className="w-full max-w-xl bg-card/50 backdrop-blur-sm border border-border/50 shadow-soft animate-slide-up overflow-hidden">
+    <Card className="w-full max-w-xl mx-auto bg-card/50 backdrop-blur-sm border border-border/50 shadow-soft animate-slide-up overflow-hidden">
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg font-medium">Company Information</CardTitle>
