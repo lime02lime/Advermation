@@ -66,7 +66,7 @@ const PostDisplay: React.FC<PostDisplayProps> = ({ post }) => {
   }
 
   return (
-    <Card className="w-full max-w-xl mx-auto bg-white border-0 shadow-lg transition-all duration-300 animate-slide-up">
+    <Card className="w-full border-0 shadow-lg transition-all duration-300 animate-slide-up">
       <CardContent className="p-6 flex flex-col items-center">
         <div className="w-full mb-2 text-xs text-[#71436d] text-left">
           <span className="italic">You can edit this text directly</span>
