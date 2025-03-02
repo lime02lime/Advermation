@@ -1,7 +1,7 @@
 
 import { fetchIndustryNews } from '../src/utils/perplexityApi';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, PutCommand, QueryCommand } from '@aws-sdk/lib-dynamodb';
+import { DynamoDBDocumentClient, PutCommand, ScanCommand } from '@aws-sdk/lib-dynamodb';
 
 // Initialize the DynamoDB client
 const client = new DynamoDBClient({
@@ -13,7 +13,7 @@ const client = new DynamoDBClient({
 });
 
 const docClient = DynamoDBDocumentClient.from(client);
-const TABLE_NAME = 'FleetIndustryNews';
+const TABLE_NAME = 'fleeteNewsData';
 
 export default async function handler(req, res) {
   // Only allow scheduled jobs (GET) or fetching news for display (POST)
@@ -44,7 +44,7 @@ export default async function handler(req, res) {
         const params = {
           TableName: TABLE_NAME,
           Item: {
-            id: `news_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
+            newsID: `news_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
             title: item.title,
             summary: item.summary,
             date: item.date || timestamp,
@@ -64,14 +64,19 @@ export default async function handler(req, res) {
     else if (req.method === 'POST') {
       const params = {
         TableName: TABLE_NAME,
-        IndexName: 'CreatedAtIndex',
-        KeyConditionExpression: 'attribute_exists(id)',
-        ScanIndexForward: false, // descending order (newest first)
+        // Using ScanCommand instead of QueryCommand since we're not using a GSI anymore
         Limit: 10,
       };
 
-      const response = await docClient.send(new QueryCommand(params));
-      return res.status(200).json({ items: response.Items || [] });
+      const response = await docClient.send(new ScanCommand(params));
+      
+      // Sort the items by createdAt in descending order (newest first)
+      const sortedItems = response.Items ? 
+        [...response.Items].sort((a, b) => 
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        ).slice(0, 10) : [];
+      
+      return res.status(200).json({ items: sortedItems });
     }
   } catch (error) {
     console.error('Error in industry news API:', error);

@@ -6,7 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Newspaper } from 'lucide-react';
 
 interface NewsItem {
-  id: string;
+  newsID: string;
   title: string;
   summary: string;
   date: string;
@@ -100,7 +100,7 @@ const IndustryNews: React.FC = () => {
       <CardContent className="px-4 py-2">
         <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2">
           {newsItems.map((item, index) => (
-            <div key={item.id} className="space-y-1">
+            <div key={item.newsID} className="space-y-1">
               <h3 className="font-medium text-sm">{item.title}</h3>
               <p className="text-xs text-muted-foreground line-clamp-3">{item.summary}</p>
               <div className="flex justify-between items-center text-[10px] text-muted-foreground mt-1">
