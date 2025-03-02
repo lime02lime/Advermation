@@ -137,7 +137,7 @@ const GeneratorForm: React.FC<GeneratorFormProps> = ({ onPostGenerated }) => {
                 placeholder="Enter a topic (e.g., fuel efficiency, driver safety)"
                 value={topic}
                 onChange={handleTopicChange}
-                className="flex-1 focus-visible:ring-1 focus-visible:ring-ring transition-shadow duration-200"
+                className="flex-1 focus-visible:ring-1 focus-visible:ring-ring transition-shadow duration-200 bg-[#f0f9ff]"
                 disabled={isGenerating}
               />
               <Button 
