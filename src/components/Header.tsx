@@ -17,7 +17,7 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
           </svg>
           <div className="flex flex-col items-start">
             <span className="text-xs uppercase tracking-wider text-[#71436d] font-medium">
-              by Fleete
+              Internal Tool
             </span>
             <h1 className="text-2xl font-bold tracking-tight text-[#2b4a9a]">
               Post<span className="text-[#8847ea]">Genius</span>

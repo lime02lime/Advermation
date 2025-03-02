@@ -45,7 +45,7 @@ const PostDisplay: React.FC<PostDisplayProps> = ({ post }) => {
 
   if (!post) {
     return (
-      <Card className="w-full max-w-xl mx-auto bg-secondary/30 backdrop-blur-sm border border-border/50 shadow-soft min-h-[200px] flex items-center justify-center text-muted-foreground animate-slide-up">
+      <Card className="w-full max-w-xl mx-auto bg-white border border-border/50 shadow-soft min-h-[200px] flex items-center justify-center text-muted-foreground animate-slide-up">
         <CardContent className="p-6 text-center w-full">
           <p>Generate a post to see it here</p>
         </CardContent>
