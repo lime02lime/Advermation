@@ -13,8 +13,8 @@ interface PostGenerationParams {
 
 export async function generatePost(params: PostGenerationParams): Promise<string> {
   try {
-    // Get the API key from localStorage or environment
-    const groqApiKey = localStorage.getItem('groqApiKey') || process.env.GROQ_API_KEY;
+    // First check for environment variable (Vercel), then fallback to localStorage (for local development)
+    const groqApiKey = import.meta.env.VITE_GROQ_API_KEY || localStorage.getItem('groqApiKey');
 
     // If no API key is provided, fall back to mock data
     if (!groqApiKey || groqApiKey === "your-groq-api-key") {
