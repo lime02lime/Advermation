@@ -1,7 +1,5 @@
 
 // This is a serverless function that will be deployed to Vercel
-import { companyContextPrompt, generateTopicPrompt } from "../src/data/companyContext";
-
 export default async function handler(req, res) {
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Credentials', true);
@@ -43,10 +41,22 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: 'API key not configured' });
     }
 
-    // Choose the appropriate prompt based on whether a topic was provided
-    const prompt = topic 
-      ? generateTopicPrompt(topic)
-      : companyContextPrompt;
+    // Build the prompt based on whether a topic was provided
+    let prompt = `
+    Create a social media post for ${companyName}, a ${industry} company.
+    
+    Company Information:
+    - Description: ${companyDescription}
+    - Target Audience: ${targetAudience}
+    - Tone: ${tone}
+    - Unique Selling Points: ${uniqueSellingPoints.join(', ')}
+    
+    The post should be concise, engaging, and include appropriate hashtags. Use a few emojis to make it more engaging.
+    `;
+
+    if (topic) {
+      prompt += `\n\nThis post should focus specifically on the topic of: ${topic}`;
+    }
 
     // Call Groq API
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {

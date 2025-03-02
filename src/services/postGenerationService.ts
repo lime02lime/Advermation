@@ -21,9 +21,20 @@ export async function generatePost(params: PostGenerationParams): Promise<string
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      console.error("API error:", errorData);
-      throw new Error(`API returned ${response.status}: ${JSON.stringify(errorData)}`);
+      const errorText = await response.text();
+      let errorMessage;
+      
+      try {
+        // Try to parse as JSON
+        const errorData = JSON.parse(errorText);
+        errorMessage = `API returned ${response.status}: ${JSON.stringify(errorData)}`;
+      } catch (e) {
+        // If not JSON, use the raw text
+        errorMessage = `API returned ${response.status}: ${errorText.substring(0, 100)}...`;
+      }
+      
+      console.error("API error:", errorMessage);
+      throw new Error(errorMessage);
     }
 
     const data = await response.json();
