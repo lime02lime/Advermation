@@ -1,4 +1,7 @@
 
+import { Groq } from "groq";
+import { companyContextPrompt, generateTopicPrompt } from "@/data/companyContext";
+
 interface PostGenerationParams {
   companyName: string;
   companyDescription: string;
@@ -9,19 +12,54 @@ interface PostGenerationParams {
   topic?: string;
 }
 
+// Initialize the Groq client
+// Note: Users will need to set their API key
+const groq = new Groq({
+  apiKey: process.env.GROQ_API_KEY || "your-groq-api-key", // Replace with actual API key
+});
+
 export async function generatePost(params: PostGenerationParams): Promise<string> {
-  // This is where you would normally call an API endpoint
-  // For now, we'll simulate a response with a 1-second delay
-  
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      if (params.topic) {
-        resolve(generateTopicBasedPost(params));
-      } else {
-        resolve(generateGenericPost(params));
-      }
-    }, 1000);
-  });
+  try {
+    // If no API key is provided, fall back to mock data
+    if (!groq.apiKey || groq.apiKey === "your-groq-api-key") {
+      console.warn("No Groq API key provided. Using mock data instead.");
+      return generateMockPost(params);
+    }
+
+    const prompt = params.topic 
+      ? generateTopicPrompt(params.topic)
+      : companyContextPrompt;
+
+    const completion = await groq.chat.completions.create({
+      messages: [
+        {
+          role: "system",
+          content: "You are a social media marketing expert that creates engaging content for businesses."
+        },
+        {
+          role: "user",
+          content: prompt
+        }
+      ],
+      model: "llama3-8b-8192",
+      temperature: 0.7,
+      max_tokens: 300,
+    });
+
+    return completion.choices[0]?.message?.content || "Unable to generate post. Please try again.";
+  } catch (error) {
+    console.error("Error generating post with Groq:", error);
+    return generateMockPost(params);
+  }
+}
+
+// Fallback function for mock post generation (kept for offline use or when API fails)
+function generateMockPost(params: PostGenerationParams): string {
+  if (params.topic) {
+    return generateTopicBasedPost(params);
+  } else {
+    return generateGenericPost(params);
+  }
 }
 
 // Simulate a generic post generation
