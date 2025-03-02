@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Header from '@/components/Header';
 import GeneratorForm from '@/components/GeneratorForm';
 import PostDisplay from '@/components/PostDisplay';
@@ -9,9 +9,30 @@ import { Card, CardContent } from '@/components/ui/card';
 
 const Index = () => {
   const [generatedPost, setGeneratedPost] = useState<string | null>(null);
+  const postDisplayRef = useRef<HTMLDivElement>(null);
 
   const handlePostGenerated = (post: string) => {
     setGeneratedPost(post);
+    
+    // Schedule the scroll for the next tick to ensure DOM has updated
+    setTimeout(() => {
+      if (postDisplayRef.current) {
+        // Check if the post is already visible in the viewport
+        const rect = postDisplayRef.current.getBoundingClientRect();
+        const isVisible = (
+          rect.top >= 0 &&
+          rect.bottom <= (window.innerHeight || document.documentElement.clientHeight)
+        );
+        
+        // Only scroll if the post is not fully visible
+        if (!isVisible) {
+          postDisplayRef.current.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'center' 
+          });
+        }
+      }
+    }, 100);
   };
 
   return (
@@ -37,7 +58,7 @@ const Index = () => {
                 </CardContent>
               </Card>
               
-              <div className="pt-4 w-full">
+              <div ref={postDisplayRef} className="pt-4 w-full">
                 <PostDisplay post={generatedPost} />
               </div>
               
