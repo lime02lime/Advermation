@@ -63,7 +63,7 @@ export default async function handler(req, res) {
     - Technology and innovation (💻📱📊🔍🤖)
     - Company success and forward reach (🔥🌟🚀🏆📈)
 
-    Make sure to distribute the emojis naturally throughout the text. You can put them at the very beginning and/or after sentences (after the punctuation marks). The post should feel vibrant and modern with these visual elements.
+    Make sure to distribute the emojis naturally throughout the text. You can put them at the very beginning and/or after sentences (IMPORTANT: emojis should be AFTER the punctuation marks). The post should feel vibrant and modern with these visual elements.
     Make sure to return ONLY the blog post text and nothing else.
     `;
 
