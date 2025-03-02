@@ -1,5 +1,5 @@
 
-import Groq from "groq";
+import { Groq } from "groq";
 import { companyContextPrompt, generateTopicPrompt } from "@/data/companyContext";
 
 interface PostGenerationParams {
@@ -21,7 +21,7 @@ const groq = new Groq({
 export async function generatePost(params: PostGenerationParams): Promise<string> {
   try {
     // If no API key is provided, fall back to mock data
-    if (!groq.apiKey || groq.apiKey === "your-groq-api-key") {
+    if (!process.env.GROQ_API_KEY || process.env.GROQ_API_KEY === "your-groq-api-key") {
       console.warn("No Groq API key provided. Using mock data instead.");
       return generateMockPost(params);
     }
