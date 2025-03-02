@@ -45,8 +45,8 @@ const PostDisplay: React.FC<PostDisplayProps> = ({ post }) => {
 
   if (!post) {
     return (
-      <Card className="w-full max-w-xl bg-secondary/30 backdrop-blur-sm border border-border/50 shadow-soft min-h-[200px] flex items-center justify-center text-muted-foreground animate-slide-up">
-        <CardContent className="p-6 text-center">
+      <Card className="w-full max-w-xl mx-auto bg-secondary/30 backdrop-blur-sm border border-border/50 shadow-soft min-h-[200px] flex items-center justify-center text-muted-foreground animate-slide-up">
+        <CardContent className="p-6 text-center w-full">
           <p>Generate a post to see it here</p>
         </CardContent>
       </Card>
@@ -54,11 +54,11 @@ const PostDisplay: React.FC<PostDisplayProps> = ({ post }) => {
   }
 
   return (
-    <Card className={`w-full max-w-xl bg-card/50 backdrop-blur-sm border border-border/50 shadow-soft transition-all duration-300 animate-slide-up`}>
-      <CardContent className="p-6">
+    <Card className="w-full max-w-xl mx-auto bg-card/50 backdrop-blur-sm border border-border/50 shadow-soft transition-all duration-300 animate-slide-up">
+      <CardContent className="p-6 flex justify-center items-center">
         <div
           ref={postRef}
-          className="font-medium text-balance text-[15px] leading-relaxed text-center"
+          className="font-medium text-balance text-[15px] leading-relaxed text-center w-full"
         >
           {post}
         </div>
