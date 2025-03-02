@@ -14,11 +14,37 @@ interface NewsItem {
   source: string;
 }
 
+// Sample mock data for when the API fails
+const mockNewsData: NewsItem[] = [
+  {
+    newsID: 'mock-news-1',
+    title: 'Major Automaker Announces New Fleet Electrification Initiative',
+    summary: 'A leading automotive manufacturer has unveiled plans to electrify 80% of their commercial fleet vehicles by 2026, partnering with utility companies to expand charging infrastructure.',
+    date: new Date().toISOString(),
+    source: 'EV Industry Today'
+  },
+  {
+    newsID: 'mock-news-2',
+    title: 'New Battery Technology Extends EV Range for Commercial Vehicles',
+    summary: 'Researchers have developed a new battery technology that could extend the range of electric commercial vehicles by up to 40%, making fleet electrification more viable for long-haul operations.',
+    date: new Date(Date.now() - 86400000).toISOString(), // Yesterday
+    source: 'Tech Innovations Weekly'
+  },
+  {
+    newsID: 'mock-news-3',
+    title: 'Government Unveils New Tax Incentives for Fleet Electrification',
+    summary: 'The federal government has announced new tax credits for businesses that transition to electric fleets, covering up to 30% of vehicle purchase costs and 50% of charging infrastructure expenses.',
+    date: new Date(Date.now() - 86400000 * 2).toISOString(), // 2 days ago
+    source: 'Policy & Regulation Report'
+  }
+];
+
 const IndustryNews: React.FC = () => {
   const { toast } = useToast();
   const [newsItems, setNewsItems] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [useMockData, setUseMockData] = useState(false);
 
   const fetchNews = async () => {
     try {
@@ -36,11 +62,15 @@ const IndustryNews: React.FC = () => {
 
       const data = await response.json();
       setNewsItems(data.items || []);
+      setUseMockData(false);
     } catch (error) {
       console.error('Error fetching industry news:', error);
+      // Fall back to mock data when the API fails
+      setNewsItems(mockNewsData);
+      setUseMockData(true);
       toast({
-        title: "Failed to load industry news",
-        description: "Please try again later.",
+        title: "Using demo data",
+        description: "Could not connect to news service. Showing sample news items.",
         variant: "destructive"
       });
     } finally {
@@ -53,8 +83,10 @@ const IndustryNews: React.FC = () => {
     setRefreshing(true);
     await fetchNews();
     toast({
-      title: "News refreshed",
-      description: "Latest industry news has been loaded."
+      title: useMockData ? "Demo data loaded" : "News refreshed",
+      description: useMockData 
+        ? "Using sample news data for demonstration purposes." 
+        : "Latest industry news has been loaded."
     });
   };
 
@@ -116,6 +148,7 @@ const IndustryNews: React.FC = () => {
         <CardTitle className="text-lg flex items-center">
           <Newspaper className="h-4 w-4 mr-2" />
           Industry News
+          {useMockData && <span className="ml-2 text-xs bg-yellow-100 text-yellow-800 px-1.5 py-0.5 rounded-md">Demo Data</span>}
         </CardTitle>
         <Button 
           variant="outline" 
