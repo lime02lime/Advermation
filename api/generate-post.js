@@ -54,7 +54,7 @@ export default async function handler(req, res) {
     - Tone: ${tone}
     - Description: ${companyDescription}
 
-    Your task is to create a concise, engaging social media post that highlights the benefits of ${companyName}'s solutions. The post should be informative, include relevant hashtags, and encourage engagement. Keep the post under 280 characters if possible.
+    Your task is to create a concise, engaging social media post that highlights the benefits of ${companyName}'s solutions. The post should be informative, include relevant hashtags, and encourage engagement. Keep the post under 200 characters if possible.
 
     IMPORTANT: Use a few emojis throughout the post (around 4-5) to make it more engaging and eye-catching. Use emojis that relate to:
     - Electric vehicles and charging (⚡🔌🚙🔋🚐)
@@ -64,6 +64,7 @@ export default async function handler(req, res) {
     - Company success and forward reach (🔥🌟🚀🏆📈)
 
     Make sure to distribute the emojis naturally throughout the text. You can put them at the very beginning and/or after sentences (after the punctuation marks). The post should feel vibrant and modern with these visual elements.
+    Make sure to return ONLY the blog post text and nothing else.
     `;
 
     if (topic) {
@@ -73,7 +74,7 @@ export default async function handler(req, res) {
       
       Be sure to mention which specific solution from our offerings (Charging Hubs, Depot Electrification, or Software Platform) best relates to this topic.
       
-      Remember to include PLENTY of emojis (at least 4-5) that specifically relate to this topic as well as fleet electrification in general. Make the post visually engaging and fun to read with these emojis distributed throughout the text.`;
+      Remember to include a few emojis (around 3-4) that specifically relate to this topic as well as fleet electrification in general. Make the post visually engaging and fun to read with these emojis distributed throughout the text.`;
     }
 
     // Call Groq API
