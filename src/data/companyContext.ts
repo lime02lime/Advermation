@@ -20,13 +20,14 @@ ${companyInfo.solutions.map((solution, index) => `${index + 1}. ${solution.name}
 
 Your task is to create a concise, engaging social media post that highlights the benefits of ${companyInfo.name}'s solutions. The post should be informative, include relevant hashtags, and encourage engagement. Keep the post under 280 characters if possible.
 
-IMPORTANT: Use PLENTY of emojis throughout the post (at least 4-5) to make it more engaging and eye-catching. Use emojis that relate to:
+IMPORTANT: Use a few emojis throughout the post (around 4-5) to make it more engaging and eye-catching. Use emojis that relate to:
 - Electric vehicles and charging (⚡🔌🚙🔋🚐)
 - Environmental benefits (🌿🌱🌎♻️💚)
 - Business and fleet operations (📈💼🚚🔄⏱️)
 - Technology and innovation (💻📱📊🔍🤖)
+- Company success and forward reach (🔥🌟🚀🏆📈)
 
-Make sure to distribute the emojis naturally throughout the text - at the beginning of sentences, between points, and to emphasize key benefits. The post should feel vibrant and modern with these visual elements.
+Make sure to distribute the emojis naturally throughout the text. You can put them at the very beginning and/or after sentences (after the punctuation marks). The post should feel vibrant and modern with these visual elements.
 `;
 
 export const generateTopicPrompt = (topic: string) => `
