@@ -13,18 +13,24 @@ interface PostDisplayProps {
 const PostDisplay: React.FC<PostDisplayProps> = ({ post }) => {
   const { toast } = useToast();
   const [copied, setCopied] = useState(false);
-  const postRef = useRef<HTMLDivElement>(null);
+  const [editedPost, setEditedPost] = useState<string>('');
+  const editableRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // Update editedPost when post changes
+    if (post) {
+      setEditedPost(post);
+    }
     // Reset copied state when post changes
     setCopied(false);
   }, [post]);
 
   const handleCopy = async () => {
-    if (!post) return;
+    if (!editedPost) return;
     
     try {
-      await navigator.clipboard.writeText(post);
+      // Copy the edited content
+      await navigator.clipboard.writeText(editedPost);
       setCopied(true);
       toast({
         title: "Copied to Clipboard",
@@ -43,6 +49,12 @@ const PostDisplay: React.FC<PostDisplayProps> = ({ post }) => {
     }
   };
 
+  const handleTextChange = () => {
+    if (editableRef.current) {
+      setEditedPost(editableRef.current.innerText);
+    }
+  };
+
   if (!post) {
     return (
       <Card className="w-full max-w-xl mx-auto bg-white border border-border/50 shadow-soft min-h-[200px] flex items-center justify-center text-muted-foreground animate-slide-up">
@@ -57,8 +69,11 @@ const PostDisplay: React.FC<PostDisplayProps> = ({ post }) => {
     <Card className="w-full max-w-xl mx-auto bg-card/50 backdrop-blur-sm border border-border/50 shadow-soft transition-all duration-300 animate-slide-up">
       <CardContent className="p-6 flex justify-center items-center">
         <div
-          ref={postRef}
-          className="font-medium text-balance text-[15px] leading-relaxed text-center w-full"
+          ref={editableRef}
+          contentEditable
+          onInput={handleTextChange}
+          className="font-medium text-balance text-[15px] leading-relaxed text-center w-full focus:outline-none focus:ring-1 focus:ring-primary/20 rounded p-2"
+          suppressContentEditableWarning={true}
         >
           {post}
         </div>
