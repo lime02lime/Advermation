@@ -146,7 +146,7 @@ const IndustryNews: React.FC = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          query: 'recent news and industry trends in delivery, transport and transport electrification'
+          query: 'recent news and industry trends in delivery, transport and transport electrification from the last 3 days only'
         }),
       });
       
@@ -225,44 +225,8 @@ const IndustryNews: React.FC = () => {
     );
   }
 
-  if (newsItems.length === 0 && !loading && !refreshing && !searching) {
-    return (
-      <Card className="w-full border shadow-sm">
-        <CardHeader className="pb-2 flex flex-row items-center justify-between">
-          <CardTitle className="text-lg flex items-center">
-            <Newspaper className="h-4 w-4 mr-2" />
-            Industry News
-          </CardTitle>
-          <div className="flex space-x-2">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={fetchNewsFromDb}
-              disabled={refreshing || searching}
-            >
-              <Database className="h-3.5 w-3.5 mr-1" />
-              Load from DB
-            </Button>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={searchNewsWithPerplexity}
-              disabled={refreshing || searching}
-            >
-              <Search className="h-3.5 w-3.5 mr-1" />
-              Search News
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground">No industry news available at the moment.</p>
-        </CardContent>
-      </Card>
-    );
-  }
-
   return (
-    <Card className="w-full border shadow-sm">
+    <Card className="w-full h-full border shadow-sm">
       <CardHeader className="pb-2 flex flex-row items-center justify-between">
         <CardTitle className="text-lg flex items-center">
           <Newspaper className="h-4 w-4 mr-2" />
@@ -283,26 +247,28 @@ const IndustryNews: React.FC = () => {
             size="sm" 
             onClick={fetchNewsFromDb}
             disabled={refreshing || searching}
+            className="flex items-center"
           >
             {refreshing ? (
               <RefreshCw className="h-3.5 w-3.5 mr-1 animate-spin" />
             ) : (
               <Database className="h-3.5 w-3.5 mr-1" />
             )}
-            Load from DB
+            <span>Load from DB</span>
           </Button>
           <Button 
             variant="outline" 
             size="sm" 
             onClick={searchNewsWithPerplexity}
             disabled={refreshing || searching}
+            className="flex items-center"
           >
             {searching ? (
               <RefreshCw className="h-3.5 w-3.5 mr-1 animate-spin" />
             ) : (
               <Search className="h-3.5 w-3.5 mr-1" />
             )}
-            Search News
+            <span>Search News</span>
           </Button>
         </div>
       </CardHeader>
@@ -332,36 +298,40 @@ const IndustryNews: React.FC = () => {
       )}
       <CardContent className="px-4 py-2">
         <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2">
-          {newsItems.map((item, index) => (
-            <div key={item.newsID} className="space-y-1">
-              <h3 className="font-medium text-sm">{item.title}</h3>
-              <p className="text-xs text-muted-foreground line-clamp-3">{item.summary}</p>
-              <div className="flex flex-col text-[10px] text-muted-foreground mt-1">
-                <div className="flex justify-between items-center">
-                  <span>Published: {new Date(item.date).toLocaleDateString()}</span>
-                  <span className="flex items-center">
-                    {item.source}
-                    {item.sourceLink && (
-                      <a 
-                        href={item.sourceLink} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="ml-1 text-blue-500 hover:text-blue-700"
-                      >
-                        <ExternalLink className="h-3 w-3" />
-                      </a>
-                    )}
-                  </span>
-                </div>
-                {item.dateAdded && (
-                  <div className="text-[9px] text-muted-foreground">
-                    Added to database: {new Date(item.dateAdded).toLocaleDateString()} {new Date(item.dateAdded).toLocaleTimeString()}
+          {newsItems.length > 0 ? (
+            newsItems.map((item, index) => (
+              <div key={item.newsID} className="space-y-1">
+                <h3 className="font-medium text-sm">{item.title}</h3>
+                <p className="text-xs text-muted-foreground line-clamp-3">{item.summary}</p>
+                <div className="flex flex-col text-[10px] text-muted-foreground mt-1">
+                  <div className="flex justify-between items-center">
+                    <span>Published: {new Date(item.date).toLocaleDateString()}</span>
+                    <span className="flex items-center">
+                      {item.source}
+                      {item.sourceLink && (
+                        <a 
+                          href={item.sourceLink} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="ml-1 text-blue-500 hover:text-blue-700"
+                        >
+                          <ExternalLink className="h-3 w-3" />
+                        </a>
+                      )}
+                    </span>
                   </div>
-                )}
+                  {item.dateAdded && (
+                    <div className="text-[9px] text-muted-foreground">
+                      Added to database: {new Date(item.dateAdded).toLocaleDateString()} {new Date(item.dateAdded).toLocaleTimeString()}
+                    </div>
+                  )}
+                </div>
+                {index < newsItems.length - 1 && <Separator className="my-2" />}
               </div>
-              {index < newsItems.length - 1 && <Separator className="my-2" />}
-            </div>
-          ))}
+            ))
+          ) : (
+            <p className="text-sm text-muted-foreground">No industry news available at the moment.</p>
+          )}
         </div>
       </CardContent>
     </Card>
