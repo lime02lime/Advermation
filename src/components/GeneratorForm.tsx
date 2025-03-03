@@ -4,16 +4,29 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { useCompany } from '@/contexts/CompanyContext';
 import { generatePost } from '@/services/postGenerationService';
-import { Send, ArrowRight } from 'lucide-react';
+import { Send, ArrowRight, Newspaper } from 'lucide-react';
+
+interface NewsItem {
+  newsID: string;
+  title: string;
+  summary: string;
+  date: string;
+  source: string;
+  dateAdded?: string;
+  sourceLink?: string;
+  selected?: boolean;
+}
 
 interface GeneratorFormProps {
   onPostGenerated: (post: string) => void;
+  selectedNews?: NewsItem[];
 }
 
-const GeneratorForm: React.FC<GeneratorFormProps> = ({ onPostGenerated }) => {
+const GeneratorForm: React.FC<GeneratorFormProps> = ({ onPostGenerated, selectedNews = [] }) => {
   const [topic, setTopic] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const { companyInfo } = useCompany();
@@ -33,7 +46,8 @@ const GeneratorForm: React.FC<GeneratorFormProps> = ({ onPostGenerated }) => {
         industry: companyInfo.industry,
         targetAudience: companyInfo.targetAudience,
         uniqueSellingPoints: companyInfo.uniqueSellingPoints,
-        tone: companyInfo.tone
+        tone: companyInfo.tone,
+        selectedNews
       });
       
       onPostGenerated(generatedPost);
@@ -73,7 +87,8 @@ const GeneratorForm: React.FC<GeneratorFormProps> = ({ onPostGenerated }) => {
         targetAudience: companyInfo.targetAudience,
         uniqueSellingPoints: companyInfo.uniqueSellingPoints,
         tone: companyInfo.tone,
-        topic: topic
+        topic: topic,
+        selectedNews
       });
       
       onPostGenerated(generatedPost);
@@ -105,6 +120,22 @@ const GeneratorForm: React.FC<GeneratorFormProps> = ({ onPostGenerated }) => {
               </p>
             </div>
           </div>
+          
+          {selectedNews.length > 0 && (
+            <div className="space-y-2 bg-blue-50 p-3 rounded-md">
+              <div className="flex items-center gap-2">
+                <Newspaper className="h-4 w-4 text-blue-500" />
+                <h4 className="text-sm font-medium text-blue-700">Using Selected News in Generation</h4>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {selectedNews.map(news => (
+                  <Badge key={news.newsID} variant="secondary" className="bg-blue-100 text-blue-800 hover:bg-blue-200">
+                    {news.title.length > 30 ? news.title.substring(0, 30) + '...' : news.title}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          )}
           
           <div className="space-y-4">
             <div className="space-y-2">

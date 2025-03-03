@@ -7,6 +7,7 @@ interface PostGenerationParams {
   uniqueSellingPoints: string[];
   tone: string;
   topic?: string;
+  selectedNews?: { summary: string }[];
 }
 
 export async function generatePost(params: PostGenerationParams): Promise<string> {

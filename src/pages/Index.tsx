@@ -8,8 +8,20 @@ import { CompanyProvider } from '@/contexts/CompanyContext';
 import { Separator } from '@/components/ui/separator';
 import { Card, CardContent } from '@/components/ui/card';
 
+interface NewsItem {
+  newsID: string;
+  title: string;
+  summary: string;
+  date: string;
+  source: string;
+  dateAdded?: string;
+  sourceLink?: string;
+  selected?: boolean;
+}
+
 const Index = () => {
   const [generatedPost, setGeneratedPost] = useState<string | null>(null);
+  const [selectedNews, setSelectedNews] = useState<NewsItem[]>([]);
   const postDisplayRef = useRef<HTMLDivElement>(null);
 
   const handlePostGenerated = (post: string) => {
@@ -36,6 +48,10 @@ const Index = () => {
     }, 100);
   };
 
+  const handleSelectedNewsChange = (news: NewsItem[]) => {
+    setSelectedNews(news);
+  };
+
   return (
     <CompanyProvider>
       <div className="min-h-screen flex flex-col bg-[#9aedff]/30">
@@ -57,7 +73,7 @@ const Index = () => {
               <div className="flex-1">
                 <Card className="w-full border-0 shadow-lg overflow-hidden">
                   <CardContent className="p-6">
-                    <GeneratorForm onPostGenerated={handlePostGenerated} />
+                    <GeneratorForm onPostGenerated={handlePostGenerated} selectedNews={selectedNews} />
                   </CardContent>
                 </Card>
                 
@@ -70,7 +86,7 @@ const Index = () => {
               
               {/* News Sidebar - Now aligned with top content */}
               <div className="w-full md:w-80 lg:w-96">
-                <IndustryNews />
+                <IndustryNews onSelectedNewsChange={handleSelectedNewsChange} />
               </div>
             </div>
           </div>
