@@ -72,7 +72,7 @@ const Index = () => {
               {/* Main Content Area */}
               <div className="flex-1">
                 <Card className="w-full border-0 shadow-lg overflow-hidden">
-                  <CardContent className="p-6">
+                  <CardContent className="p-6 w-full">
                     <GeneratorForm onPostGenerated={handlePostGenerated} selectedNews={selectedNews} />
                   </CardContent>
                 </Card>
