@@ -1,85 +1,72 @@
 
-import { fetchIndustryNews } from '../src/utils/perplexityApi';
+// This file serves as a template for setting up a real AWS DynamoDB integration
+// It's not used in the demo version, but shows how to implement it in production
+
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, PutCommand, ScanCommand } from '@aws-sdk/lib-dynamodb';
+import { DynamoDBDocumentClient, ScanCommand } from '@aws-sdk/lib-dynamodb';
 
 // Initialize the DynamoDB client
-const client = new DynamoDBClient({
-  region: process.env.AWS_REGION,
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  },
-});
+const configureDynamoClient = () => {
+  // Check for required environment variables
+  if (!process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY || !process.env.AWS_REGION) {
+    throw new Error(
+      'Missing AWS credentials. Please set AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, and AWS_REGION environment variables.'
+    );
+  }
 
-const docClient = DynamoDBDocumentClient.from(client);
-const TABLE_NAME = 'fleeteNewsData';
+  const client = new DynamoDBClient({
+    region: process.env.AWS_REGION,
+    credentials: {
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    },
+  });
+
+  return DynamoDBDocumentClient.from(client);
+};
+
+const TABLE_NAME = 'fleeteNewsData'; // Table must exist in your DynamoDB account
 
 export default async function handler(req, res) {
-  // Only allow scheduled jobs (GET) or fetching news for display (POST)
-  if (req.method !== 'GET' && req.method !== 'POST') {
+  // Only allow POST requests for fetching news
+  if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
-    // For scheduled jobs - fetch news and store in DynamoDB
-    if (req.method === 'GET') {
-      // Verify this is being called by the Vercel cron job
-      const authHeader = req.headers.authorization;
-      if (!authHeader || authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-        return res.status(401).json({ error: 'Unauthorized' });
-      }
+    // Setup DynamoDB client
+    const docClient = configureDynamoClient();
 
-      const perplexityApiKey = process.env.PERPLEXITY_API_KEY;
-      if (!perplexityApiKey) {
-        return res.status(500).json({ error: 'Missing Perplexity API key' });
-      }
+    // Scan the table for news items
+    const params = {
+      TableName: TABLE_NAME,
+      Limit: 10, // Only get the latest 10 items
+    };
 
-      // Fetch industry news from Perplexity
-      const newsItems = await fetchIndustryNews(perplexityApiKey);
-      
-      // Store each news item in DynamoDB
-      const timestamp = new Date().toISOString();
-      const storePromises = newsItems.map(async (item) => {
-        const params = {
-          TableName: TABLE_NAME,
-          Item: {
-            newsID: `news_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
-            title: item.title,
-            summary: item.summary,
-            date: item.date || timestamp,
-            source: item.source || 'Perplexity API',
-            createdAt: timestamp,
-          },
-        };
-
-        return docClient.send(new PutCommand(params));
-      });
-
-      await Promise.all(storePromises);
-      return res.status(200).json({ success: true, count: newsItems.length });
-    }
+    const response = await docClient.send(new ScanCommand(params));
     
-    // For client requests - return the latest news items
-    else if (req.method === 'POST') {
-      const params = {
-        TableName: TABLE_NAME,
-        // Using ScanCommand instead of QueryCommand since we're not using a GSI anymore
-        Limit: 10,
-      };
-
-      const response = await docClient.send(new ScanCommand(params));
-      
-      // Sort the items by createdAt in descending order (newest first)
-      const sortedItems = response.Items ? 
-        [...response.Items].sort((a, b) => 
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        ).slice(0, 10) : [];
-      
-      return res.status(200).json({ items: sortedItems });
-    }
+    // Sort items by date (newest first)
+    const sortedItems = response.Items ? 
+      [...response.Items].sort((a, b) => 
+        new Date(b.date).getTime() - new Date(a.date).getTime()
+      ) : [];
+    
+    return res.status(200).json({ 
+      items: sortedItems,
+      message: 'Successfully retrieved news items'
+    });
   } catch (error) {
     console.error('Error in industry news API:', error);
-    return res.status(500).json({ error: error.message });
+    
+    // Return detailed error information for debugging
+    return res.status(500).json({ 
+      error: error.message,
+      details: error.stack,
+      suggestions: [
+        'Make sure AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, and AWS_REGION are set',
+        'Verify the DynamoDB table "fleeteNewsData" exists',
+        'Check that your AWS IAM user has permission to scan the table'
+      ]
+    });
   }
 }

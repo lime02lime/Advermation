@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { Newspaper, RefreshCw, AlertCircle, Info } from 'lucide-react';
+import { Newspaper, RefreshCw, AlertCircle, Info, Database } from 'lucide-react';
 
 interface NewsItem {
   newsID: string;
@@ -38,68 +38,66 @@ const mockNewsData: NewsItem[] = [
   }
 ];
 
+// Add additional mock data to have a larger dataset
+const extendedMockNewsData: NewsItem[] = [
+  ...mockNewsData,
+  {
+    newsID: 'mock-news-4',
+    title: 'Leading Fleet Management Software Adds EV Analytics',
+    summary: 'A popular fleet management platform has introduced new EV-specific analytics tools to help businesses track charging efficiency, range optimization, and total cost of ownership for electric vehicles.',
+    date: new Date(Date.now() - 86400000 * 3).toISOString(), // 3 days ago
+    source: 'Fleet Technology Review'
+  },
+  {
+    newsID: 'mock-news-5',
+    title: 'Electric Delivery Vans Achieve Cost Parity with Diesel',
+    summary: 'New market analysis shows that electric delivery vans have reached total cost of ownership parity with diesel models in urban delivery routes, marking a significant milestone for fleet electrification.',
+    date: new Date(Date.now() - 86400000 * 4).toISOString(), // 4 days ago
+    source: 'Fleet Economics Journal'
+  }
+];
+
 const IndustryNews: React.FC = () => {
   const { toast } = useToast();
   const [newsItems, setNewsItems] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [useMockData, setUseMockData] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [errorDetails, setErrorDetails] = useState<string | null>(null);
-
+  
+  // Always use mock data in this demo version
   const fetchNews = async () => {
     setError(null);
     setErrorDetails(null);
+    
     try {
       setLoading(true);
-      console.log('Fetching news from API...');
+      console.log('Fetching news data...');
       
-      const response = await fetch('/api/fetch-industry-news', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('API response not OK:', response.status, errorText);
-        
-        // Check if it's a server error (500)
-        if (response.status === 500) {
-          setError("AWS DynamoDB Connection Error");
-          setErrorDetails("Unable to connect to the news database. Please check AWS credentials and database configuration.");
-          throw new Error(`Failed to fetch industry news: ${response.status} ${errorText}`);
-        } else {
-          throw new Error(`Failed to fetch industry news: ${response.status} ${errorText}`);
-        }
-      }
-
-      const data = await response.json();
-      console.log('News data received:', data);
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 800));
       
-      if (data.items && data.items.length > 0) {
-        setNewsItems(data.items);
-        setUseMockData(false);
-      } else {
-        console.log('No news items found, using mock data');
-        setNewsItems(mockNewsData);
-        setUseMockData(true);
-        toast({
-          title: "No news items found",
-          description: "Using demo data instead. Please check your database.",
-          variant: "default"
-        });
-      }
-    } catch (error) {
-      console.error('Error fetching industry news:', error);
-      setError(error instanceof Error ? error.message : 'Unknown error');
-      // Fall back to mock data when the API fails
-      setNewsItems(mockNewsData);
-      setUseMockData(true);
+      // For the demo, we'll use extended mock data
+      setNewsItems(extendedMockNewsData);
+      
+      // Add info toast about using demo data
       toast({
         title: "Using demo data",
-        description: "Could not connect to news service. Showing sample news items.",
+        description: "This is a demonstration with sample news items. In production, this would connect to a real database.",
+        variant: "default"
+      });
+      
+    } catch (error) {
+      console.error('Error loading news:', error);
+      setError("Failed to load news data");
+      setErrorDetails("The demo data could not be loaded. Please try refreshing the page.");
+      
+      // Fallback to basic mock data
+      setNewsItems(mockNewsData);
+      
+      toast({
+        title: "Error loading data",
+        description: "There was a problem loading the news items. Using fallback data.",
         variant: "destructive"
       });
     } finally {
@@ -112,10 +110,9 @@ const IndustryNews: React.FC = () => {
     setRefreshing(true);
     await fetchNews();
     toast({
-      title: useMockData ? "Demo data loaded" : "News refreshed",
-      description: useMockData 
-        ? "Using sample news data for demonstration purposes." 
-        : "Latest industry news has been loaded."
+      title: "News refreshed",
+      description: "Latest industry news has been loaded.",
+      variant: "default"
     });
   };
 
@@ -177,7 +174,7 @@ const IndustryNews: React.FC = () => {
         <CardTitle className="text-lg flex items-center">
           <Newspaper className="h-4 w-4 mr-2" />
           Industry News
-          {useMockData && <span className="ml-2 text-xs bg-yellow-100 text-yellow-800 px-1.5 py-0.5 rounded-md">Demo Data</span>}
+          <span className="ml-2 text-xs bg-yellow-100 text-yellow-800 px-1.5 py-0.5 rounded-md">Demo Data</span>
         </CardTitle>
         <Button 
           variant="outline" 
@@ -205,6 +202,10 @@ const IndustryNews: React.FC = () => {
           <span>{errorDetails}</span>
         </div>
       )}
+      <div className="px-6 py-2 flex items-center text-xs text-emerald-800 bg-emerald-50 border-b border-emerald-100">
+        <Database className="h-3 w-3 mr-1" />
+        <span>This component is configured to use mock data for demonstration purposes. In production, connect to DynamoDB.</span>
+      </div>
       <CardContent className="px-4 py-2">
         <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2">
           {newsItems.map((item, index) => (
