@@ -68,7 +68,7 @@ const Index = () => {
               </p>
             </div>
             
-            <div className="flex flex-col md:flex-row gap-8">
+            <div className="flex flex-col md:flex-row gap-8 h-full">
               {/* Main Content Area */}
               <div className="flex-1">
                 <Card className="w-full border-0 shadow-lg overflow-hidden">
@@ -85,7 +85,7 @@ const Index = () => {
               </div>
               
               {/* News Sidebar - Now aligned with top content */}
-              <div className="w-full md:w-80 lg:w-96">
+              <div className="w-full md:w-80 lg:w-96 flex flex-col">
                 <IndustryNews onSelectedNewsChange={handleSelectedNewsChange} />
               </div>
             </div>

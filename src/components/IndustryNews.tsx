@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -154,15 +155,15 @@ const IndustryNews: React.FC<IndustryNewsProps> = ({ onSelectedNewsChange }) => 
 
   if (loading) {
     return (
-      <Card className="w-full border shadow-sm">
+      <Card className="w-full h-full border shadow-sm flex flex-col">
         <CardHeader className="pb-2 flex flex-row items-center justify-between">
           <CardTitle className="text-lg flex items-center">
             <Newspaper className="h-4 w-4 mr-2" />
             Industry News
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="animate-pulse space-y-3">
+        <CardContent className="flex-grow">
+          <div className="animate-pulse space-y-3 h-full">
             {[...Array(3)].map((_, i) => (
               <div key={i} className="py-2">
                 <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
@@ -176,7 +177,7 @@ const IndustryNews: React.FC<IndustryNewsProps> = ({ onSelectedNewsChange }) => 
   }
 
   return (
-    <Card className="w-full h-full border shadow-sm">
+    <Card className="w-full h-full border shadow-sm flex flex-col">
       <CardHeader className="pb-2 flex flex-row items-center justify-between">
         <CardTitle className="text-lg flex items-center">
           <Newspaper className="h-4 w-4 mr-2" />
@@ -222,8 +223,8 @@ const IndustryNews: React.FC<IndustryNewsProps> = ({ onSelectedNewsChange }) => 
           <span>Using mock data. To use real data, ensure AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY are set correctly.</span>
         </div>
       )}
-      <CardContent className="px-4 py-2">
-        <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2">
+      <CardContent className="px-4 py-2 flex-grow flex flex-col">
+        <div className="space-y-4 overflow-y-auto pr-2 flex-grow">
           {newsItems.length > 0 ? (
             newsItems.map((item, index) => (
               <div key={item.newsID}>
