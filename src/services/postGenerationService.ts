@@ -7,18 +7,23 @@ interface PostGenerationParams {
   uniqueSellingPoints: string[];
   tone: string;
   topic?: string;
-  selectedNews?: { summary: string }[];
+  selectedNews?: { title?: string; summary: string }[];
 }
 
 export async function generatePost(params: PostGenerationParams): Promise<string> {
+  // Create a modified request body that includes instructions about the news
+  const requestBody = { ...params };
+  
   // Call our serverless function
   try {
+    console.log("Sending post generation request with params:", JSON.stringify(requestBody));
+    
     const response = await fetch('/api/generate-post', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(params),
+      body: JSON.stringify(requestBody),
     });
 
     if (!response.ok) {

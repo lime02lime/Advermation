@@ -212,48 +212,51 @@ const IndustryNews: React.FC<IndustryNewsProps> = ({ onSelectedNewsChange }) => 
         <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2">
           {newsItems.length > 0 ? (
             newsItems.map((item, index) => (
-              <div 
-                key={item.newsID} 
-                className={`space-y-1 p-2 rounded-md transition-colors ${item.selected ? 'bg-blue-50' : 'hover:bg-gray-50'}`}
-                onClick={() => toggleNewsSelection(item.newsID)}
-                role="button"
-                aria-pressed={item.selected}
-              >
-                <div className="flex items-start gap-2">
-                  {item.selected ? 
-                    <CheckCircle className="h-4 w-4 text-blue-500 flex-shrink-0 mt-0.5" /> : 
-                    <Circle className="h-4 w-4 text-gray-300 flex-shrink-0 mt-0.5" />
-                  }
-                  <div className="flex-1">
-                    <h3 className="font-medium text-sm">{item.title}</h3>
-                    <p className="text-xs text-muted-foreground line-clamp-3">{item.summary}</p>
-                    <div className="flex flex-col text-[10px] text-muted-foreground mt-1">
-                      <div className="flex justify-between items-center">
-                        <span>Published: {new Date(item.date).toLocaleDateString()}</span>
-                        <span className="flex items-center">
-                          {item.source}
-                          {item.sourceLink && (
-                            <a 
-                              href={item.sourceLink} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="ml-1 text-blue-500 hover:text-blue-700"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              <ExternalLink className="h-3 w-3" />
-                            </a>
-                          )}
-                        </span>
-                      </div>
-                      {item.dateAdded && (
-                        <div className="text-[9px] text-muted-foreground">
-                          Added to database: {new Date(item.dateAdded).toLocaleDateString()} {new Date(item.dateAdded).toLocaleTimeString()}
+              <div key={item.newsID}>
+                <div 
+                  className={`space-y-1 p-2 rounded-md transition-colors ${item.selected ? 'bg-blue-50' : 'hover:bg-gray-50'}`}
+                  onClick={() => toggleNewsSelection(item.newsID)}
+                  role="button"
+                  aria-pressed={item.selected}
+                >
+                  <div className="flex items-start gap-2">
+                    {item.selected ? 
+                      <CheckCircle className="h-4 w-4 text-blue-500 flex-shrink-0 mt-0.5" /> : 
+                      <Circle className="h-4 w-4 text-gray-300 flex-shrink-0 mt-0.5" />
+                    }
+                    <div className="flex-1">
+                      <h3 className="font-medium text-sm">{item.title}</h3>
+                      <p className="text-xs text-muted-foreground line-clamp-3">{item.summary}</p>
+                      <div className="flex flex-col text-[10px] text-muted-foreground mt-1">
+                        <div className="flex justify-between items-center">
+                          <span>Published: {new Date(item.date).toLocaleDateString()}</span>
+                          <span className="flex items-center">
+                            {item.source}
+                            {item.sourceLink && (
+                              <a 
+                                href={item.sourceLink} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="ml-1 text-blue-500 hover:text-blue-700"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <ExternalLink className="h-3 w-3" />
+                              </a>
+                            )}
+                          </span>
                         </div>
-                      )}
+                        {item.dateAdded && (
+                          <div className="text-[9px] text-muted-foreground">
+                            Added to database: {new Date(item.dateAdded).toLocaleDateString()} {new Date(item.dateAdded).toLocaleTimeString()}
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
-                {index < newsItems.length - 1 && <Separator className="my-2" />}
+                {index < newsItems.length - 1 && (
+                  <Separator className="my-3" />
+                )}
               </div>
             ))
           ) : (
