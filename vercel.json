@@ -2,7 +2,7 @@
 {
   "crons": [
     {
-      "path": "/api/fetch-industry-news",
+      "path": "/api/search-industry-news",
       "schedule": "0 5 * * *"
     }
   ]

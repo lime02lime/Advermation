@@ -2,8 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
-import { Button } from "@/components/ui/button";
-import { Newspaper, RefreshCw, AlertCircle, Info, Database, Search, Save, ExternalLink } from 'lucide-react';
+import { AlertCircle, Info, Database, ExternalLink, Newspaper } from 'lucide-react';
 
 interface NewsItem {
   newsID: string;
@@ -66,8 +65,6 @@ const IndustryNews: React.FC = () => {
   const { toast } = useToast();
   const [newsItems, setNewsItems] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-  const [searching, setSearching] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [errorDetails, setErrorDetails] = useState<string | null>(null);
   const [usingMockData, setUsingMockData] = useState(false);
@@ -82,7 +79,6 @@ const IndustryNews: React.FC = () => {
     setSavedCount(0);
     
     try {
-      setRefreshing(true);
       console.log('Fetching news data from DynamoDB...');
       
       const response = await fetch('/api/fetch-industry-news', {
@@ -124,85 +120,16 @@ const IndustryNews: React.FC = () => {
         variant: "default"
       });
     } finally {
-      setRefreshing(false);
-      setLoading(false);
-    }
-  };
-
-  const searchNewsWithPerplexity = async () => {
-    setError(null);
-    setErrorDetails(null);
-    setUsingMockData(false);
-    setSavedToDynamoDB(false);
-    setSavedCount(0);
-    
-    try {
-      setSearching(true);
-      console.log('Searching for news with Perplexity API...');
-      
-      const response = await fetch('/api/search-industry-news', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          query: 'recent news and industry trends in delivery, transport and transport electrification from the last 3 days only'
-        }),
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(`Failed to search industry news: ${response.status} ${errorData.error || 'Unknown error'}`);
-      }
-      
-      const data = await response.json();
-      
-      if (data.items && data.items.length > 0) {
-        setNewsItems(data.items);
-        
-        if (data.saved) {
-          setSavedToDynamoDB(true);
-          setSavedCount(data.savedCount || 0);
-          toast({
-            title: "News search completed",
-            description: `Latest industry news has been fetched and ${data.savedCount} items saved to DynamoDB.`,
-            variant: "default"
-          });
-        } else {
-          toast({
-            title: "News search completed",
-            description: "Latest industry news has been fetched from Perplexity AI but could not be saved to DynamoDB.",
-            variant: "default"
-          });
-        }
-      } else {
-        throw new Error('No news items returned from search');
-      }
-      
-    } catch (error) {
-      console.error('Error searching news:', error);
-      setError("Unable to search for news");
-      setErrorDetails("Using mock data instead. In production, this would use Perplexity AI API.");
-      setUsingMockData(true);
-      
-      setNewsItems(extendedMockNewsData);
-      
-      toast({
-        title: "Using demo data",
-        description: "There was a problem searching for news. Using sample news items instead.",
-        variant: "default"
-      });
-    } finally {
-      setSearching(false);
       setLoading(false);
     }
   };
 
   useEffect(() => {
     fetchNewsFromDb();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (loading && !refreshing && !searching) {
+  if (loading) {
     return (
       <Card className="w-full border shadow-sm">
         <CardHeader className="pb-2 flex flex-row items-center justify-between">
@@ -236,41 +163,10 @@ const IndustryNews: React.FC = () => {
           )}
           {savedToDynamoDB && (
             <span className="ml-2 text-xs bg-green-100 text-green-800 px-1.5 py-0.5 rounded-md flex items-center">
-              <Save className="h-3 w-3 mr-1" />
               Saved ({savedCount})
             </span>
           )}
         </CardTitle>
-        <div className="flex space-x-2">
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={fetchNewsFromDb}
-            disabled={refreshing || searching}
-            className="flex items-center"
-          >
-            {refreshing ? (
-              <RefreshCw className="h-3.5 w-3.5 mr-1 animate-spin" />
-            ) : (
-              <Database className="h-3.5 w-3.5 mr-1" />
-            )}
-            <span>Load from DB</span>
-          </Button>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={searchNewsWithPerplexity}
-            disabled={refreshing || searching}
-            className="flex items-center"
-          >
-            {searching ? (
-              <RefreshCw className="h-3.5 w-3.5 mr-1 animate-spin" />
-            ) : (
-              <Search className="h-3.5 w-3.5 mr-1" />
-            )}
-            <span>Search News</span>
-          </Button>
-        </div>
       </CardHeader>
       {error && (
         <div className="px-6 py-2 flex items-center text-xs text-amber-800 bg-amber-50 border-t border-b border-amber-100">
@@ -288,12 +184,6 @@ const IndustryNews: React.FC = () => {
         <div className="px-6 py-2 flex items-center text-xs text-emerald-800 bg-emerald-50 border-b border-emerald-100">
           <Database className="h-3 w-3 mr-1" />
           <span>Using mock data. To use real data, ensure AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY are set correctly.</span>
-        </div>
-      )}
-      {savedToDynamoDB && (
-        <div className="px-6 py-2 flex items-center text-xs text-green-800 bg-green-50 border-b border-green-100">
-          <Save className="h-3 w-3 mr-1" />
-          <span>Successfully saved {savedCount} news items to DynamoDB database.</span>
         </div>
       )}
       <CardContent className="px-4 py-2">
