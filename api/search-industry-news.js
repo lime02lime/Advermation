@@ -1,5 +1,6 @@
 
-// This endpoint calls the Perplexity API to search for recent news and saves results to DynamoDB
+// This file is a duplicate of pages/api/search-industry-news.js
+// It's here because we're supporting both api/ and pages/api/ structures
 import { v4 as uuidv4 } from 'uuid';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, PutCommand } from '@aws-sdk/lib-dynamodb';

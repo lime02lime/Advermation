@@ -1,31 +1,20 @@
 
-// This file serves as a template for setting up a real AWS DynamoDB integration
-// It's not used in the demo version, but shows how to implement it in production
-
+// This file is a duplicate of pages/api/fetch-industry-news.js
+// It's here because we're supporting both api/ and pages/api/ structures
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, ScanCommand } from '@aws-sdk/lib-dynamodb';
 
 // Initialize the DynamoDB client
-const configureDynamoClient = () => {
-  // Check for required environment variables
-  if (!process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY || !process.env.AWS_REGION) {
-    throw new Error(
-      'Missing AWS credentials. Please set AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, and AWS_REGION environment variables.'
-    );
-  }
+const client = new DynamoDBClient({
+  region: process.env.AWS_REGION || 'eu-west-2',
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID || '',
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || '',
+  },
+});
 
-  const client = new DynamoDBClient({
-    region: process.env.AWS_REGION,
-    credentials: {
-      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    },
-  });
-
-  return DynamoDBDocumentClient.from(client);
-};
-
-const TABLE_NAME = 'fleeteNewsData'; // Table must exist in your DynamoDB account
+const docClient = DynamoDBDocumentClient.from(client);
+const TABLE_NAME = 'fleeteNewsData';
 
 export default async function handler(req, res) {
   // Only allow POST requests for fetching news
@@ -34,39 +23,33 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Setup DynamoDB client
-    const docClient = configureDynamoClient();
+    // Check if AWS credentials are available
+    if (!process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY) {
+      console.error('AWS credentials are missing');
+      return res.status(500).json({ 
+        error: 'AWS credentials are missing. Please set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY environment variables.' 
+      });
+    }
 
-    // Scan the table for news items
     const params = {
       TableName: TABLE_NAME,
-      Limit: 10, // Only get the latest 10 items
+      Limit: 10,
     };
 
     const response = await docClient.send(new ScanCommand(params));
     
-    // Sort items by date (newest first)
+    // Sort the items by date in descending order (newest first)
     const sortedItems = response.Items ? 
       [...response.Items].sort((a, b) => 
         new Date(b.date).getTime() - new Date(a.date).getTime()
-      ) : [];
+      ).slice(0, 10) : [];
     
-    return res.status(200).json({ 
-      items: sortedItems,
-      message: 'Successfully retrieved news items'
-    });
+    return res.status(200).json({ items: sortedItems });
   } catch (error) {
     console.error('Error in industry news API:', error);
-    
-    // Return detailed error information for debugging
     return res.status(500).json({ 
       error: error.message,
-      details: error.stack,
-      suggestions: [
-        'Make sure AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, and AWS_REGION are set',
-        'Verify the DynamoDB table "fleeteNewsData" exists',
-        'Check that your AWS IAM user has permission to scan the table'
-      ]
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
     });
   }
 }

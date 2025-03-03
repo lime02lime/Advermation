@@ -1,9 +1,10 @@
+
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { Newspaper, RefreshCw, AlertCircle, Info, Database, Search } from 'lucide-react';
+import { Newspaper, RefreshCw, AlertCircle, Info, Database, Search, Save } from 'lucide-react';
 
 interface NewsItem {
   newsID: string;
@@ -64,11 +65,15 @@ const IndustryNews: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [errorDetails, setErrorDetails] = useState<string | null>(null);
   const [usingMockData, setUsingMockData] = useState(false);
+  const [savedToDynamoDB, setSavedToDynamoDB] = useState(false);
+  const [savedCount, setSavedCount] = useState(0);
   
   const fetchNewsFromDb = async () => {
     setError(null);
     setErrorDetails(null);
     setUsingMockData(false);
+    setSavedToDynamoDB(false);
+    setSavedCount(0);
     
     try {
       setRefreshing(true);
@@ -92,7 +97,7 @@ const IndustryNews: React.FC = () => {
         setNewsItems(data.items);
         toast({
           title: "News loaded successfully",
-          description: "Latest industry news has been loaded from the database.",
+          description: `${data.items.length} news items loaded from the database.`,
           variant: "default"
         });
       } else {
@@ -124,6 +129,8 @@ const IndustryNews: React.FC = () => {
     setError(null);
     setErrorDetails(null);
     setUsingMockData(false);
+    setSavedToDynamoDB(false);
+    setSavedCount(0);
     
     try {
       setSearching(true);
@@ -148,11 +155,23 @@ const IndustryNews: React.FC = () => {
       
       if (data.items && data.items.length > 0) {
         setNewsItems(data.items);
-        toast({
-          title: "News search completed",
-          description: "Latest industry news has been fetched from Perplexity AI.",
-          variant: "default"
-        });
+        
+        // Check if items were saved to DynamoDB
+        if (data.saved) {
+          setSavedToDynamoDB(true);
+          setSavedCount(data.savedCount || 0);
+          toast({
+            title: "News search completed",
+            description: `Latest industry news has been fetched and ${data.savedCount} items saved to DynamoDB.`,
+            variant: "default"
+          });
+        } else {
+          toast({
+            title: "News search completed",
+            description: "Latest industry news has been fetched from Perplexity AI but could not be saved to DynamoDB.",
+            variant: "default"
+          });
+        }
       } else {
         throw new Error('No news items returned from search');
       }
@@ -249,6 +268,12 @@ const IndustryNews: React.FC = () => {
           {usingMockData && (
             <span className="ml-2 text-xs bg-yellow-100 text-yellow-800 px-1.5 py-0.5 rounded-md">Demo Data</span>
           )}
+          {savedToDynamoDB && (
+            <span className="ml-2 text-xs bg-green-100 text-green-800 px-1.5 py-0.5 rounded-md flex items-center">
+              <Save className="h-3 w-3 mr-1" />
+              Saved ({savedCount})
+            </span>
+          )}
         </CardTitle>
         <div className="flex space-x-2">
           <Button 
@@ -295,6 +320,12 @@ const IndustryNews: React.FC = () => {
         <div className="px-6 py-2 flex items-center text-xs text-emerald-800 bg-emerald-50 border-b border-emerald-100">
           <Database className="h-3 w-3 mr-1" />
           <span>Using mock data. To use real data, ensure AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY are set correctly.</span>
+        </div>
+      )}
+      {savedToDynamoDB && (
+        <div className="px-6 py-2 flex items-center text-xs text-green-800 bg-green-50 border-b border-green-100">
+          <Save className="h-3 w-3 mr-1" />
+          <span>Successfully saved {savedCount} news items to DynamoDB database.</span>
         </div>
       )}
       <CardContent className="px-4 py-2">
