@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { AlertCircle, Info, Database, ExternalLink, Newspaper, CheckCircle, Circle } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface NewsItem {
   newsID: string;
@@ -180,6 +181,19 @@ const IndustryNews: React.FC<IndustryNewsProps> = ({ onSelectedNewsChange }) => 
         <CardTitle className="text-lg flex items-center">
           <Newspaper className="h-4 w-4 mr-2" />
           Industry News
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="ml-2 text-xs bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded-md inline-flex items-center">
+                  <Info className="h-3 w-3 mr-1" />
+                  Click to select
+                </span>
+              </TooltipTrigger>
+              <TooltipContent side="top">
+                <p className="text-xs">Select news items to include in your post</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
           {usingMockData && (
             <span className="ml-2 text-xs bg-yellow-100 text-yellow-800 px-1.5 py-0.5 rounded-md">Demo Data</span>
           )}
