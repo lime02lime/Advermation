@@ -26,7 +26,8 @@ export default async function handler(req, res) {
       targetAudience,
       uniqueSellingPoints,
       tone,
-      topic
+      topic,
+      selectedNews = []
     } = req.body;
 
     // Validate inputs
@@ -73,6 +74,18 @@ export default async function handler(req, res) {
       Emphasize how ${companyName}'s solution addresses challenges or provides benefits related to this specific topic.
       
       Be sure to mention which specific solution from our offerings (Charging Hubs, Depot Electrification, or Software Platform) best relates to this topic.`;
+    }
+
+    // Add selected news to the prompt if available
+    if (selectedNews && selectedNews.length > 0) {
+      userPrompt += `\n\nTailor the post based on the contents of the following related industry news:\n\n`;
+      
+      selectedNews.forEach((news, index) => {
+        userPrompt += `News Item ${index + 1}: ${news.title || 'Untitled'}\n`;
+        userPrompt += `Summary: ${news.summary}\n\n`;
+      });
+      
+      userPrompt += `Incorporate relevant insights from these news items to make the post more timely and engaging. Connect these industry trends to ${companyName}'s offerings and value proposition.`;
     }
 
     // Call Groq API with separated messages
