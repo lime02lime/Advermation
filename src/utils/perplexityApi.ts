@@ -22,7 +22,13 @@ export async function fetchIndustryNews(apiKey: string, query: string = "latest 
         messages: [
           {
             role: 'system',
-            content: 'You are a helpful assistant that provides the latest news about fleet electrification and EV industry. Format your response as a JSON array with objects containing title, summary, date, and source fields.'
+            content: `You are a helpful assistant that provides the latest news about fleet electrification and EV industry. 
+            Format your response as JSON array with objects containing:
+            - title: News title
+            - summary: Brief summary of the news in 2-3 sentences
+            - date: ISO date string of when the news was published
+            - source: Source publication name
+            - sourceLink: URL to the original news source`
           },
           {
             role: 'user',

@@ -1,10 +1,9 @@
-
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { Newspaper, RefreshCw, AlertCircle, Info, Database, Search, Save } from 'lucide-react';
+import { Newspaper, RefreshCw, AlertCircle, Info, Database, Search, Save, ExternalLink } from 'lucide-react';
 
 interface NewsItem {
   newsID: string;
@@ -12,6 +11,8 @@ interface NewsItem {
   summary: string;
   date: string;
   source: string;
+  dateAdded?: string;
+  sourceLink?: string;
 }
 
 const mockNewsData: NewsItem[] = [
@@ -20,21 +21,24 @@ const mockNewsData: NewsItem[] = [
     title: 'Major Automaker Announces New Fleet Electrification Initiative',
     summary: 'A leading automotive manufacturer has unveiled plans to electrify 80% of their commercial fleet vehicles by 2026, partnering with utility companies to expand charging infrastructure.',
     date: new Date().toISOString(),
-    source: 'EV Industry Today'
+    source: 'EV Industry Today',
+    dateAdded: new Date().toISOString()
   },
   {
     newsID: 'mock-news-2',
     title: 'New Battery Technology Extends EV Range for Commercial Vehicles',
     summary: 'Researchers have developed a new battery technology that could extend the range of electric commercial vehicles by up to 40%, making fleet electrification more viable for long-haul operations.',
     date: new Date(Date.now() - 86400000).toISOString(), // Yesterday
-    source: 'Tech Innovations Weekly'
+    source: 'Tech Innovations Weekly',
+    dateAdded: new Date().toISOString()
   },
   {
     newsID: 'mock-news-3',
     title: 'Government Unveils New Tax Incentives for Fleet Electrification',
     summary: 'The federal government has announced new tax credits for businesses that transition to electric fleets, covering up to 30% of vehicle purchase costs and 50% of charging infrastructure expenses.',
     date: new Date(Date.now() - 86400000 * 2).toISOString(), // 2 days ago
-    source: 'Policy & Regulation Report'
+    source: 'Policy & Regulation Report',
+    dateAdded: new Date().toISOString()
   }
 ];
 
@@ -45,14 +49,16 @@ const extendedMockNewsData: NewsItem[] = [
     title: 'Leading Fleet Management Software Adds EV Analytics',
     summary: 'A popular fleet management platform has introduced new EV-specific analytics tools to help businesses track charging efficiency, range optimization, and total cost of ownership for electric vehicles.',
     date: new Date(Date.now() - 86400000 * 3).toISOString(), // 3 days ago
-    source: 'Fleet Technology Review'
+    source: 'Fleet Technology Review',
+    dateAdded: new Date().toISOString()
   },
   {
     newsID: 'mock-news-5',
     title: 'Electric Delivery Vans Achieve Cost Parity with Diesel',
     summary: 'New market analysis shows that electric delivery vans have reached total cost of ownership parity with diesel models in urban delivery routes, marking a significant milestone for fleet electrification.',
     date: new Date(Date.now() - 86400000 * 4).toISOString(), // 4 days ago
-    source: 'Fleet Economics Journal'
+    source: 'Fleet Economics Journal',
+    dateAdded: new Date().toISOString()
   }
 ];
 
@@ -101,7 +107,6 @@ const IndustryNews: React.FC = () => {
           variant: "default"
         });
       } else {
-        // If no items were returned, use mock data
         throw new Error('No news items returned from database');
       }
       
@@ -111,7 +116,6 @@ const IndustryNews: React.FC = () => {
       setErrorDetails("Using mock data instead. In production, this would connect to AWS DynamoDB.");
       setUsingMockData(true);
       
-      // Fallback to extended mock data
       setNewsItems(extendedMockNewsData);
       
       toast({
@@ -156,7 +160,6 @@ const IndustryNews: React.FC = () => {
       if (data.items && data.items.length > 0) {
         setNewsItems(data.items);
         
-        // Check if items were saved to DynamoDB
         if (data.saved) {
           setSavedToDynamoDB(true);
           setSavedCount(data.savedCount || 0);
@@ -182,7 +185,6 @@ const IndustryNews: React.FC = () => {
       setErrorDetails("Using mock data instead. In production, this would use Perplexity AI API.");
       setUsingMockData(true);
       
-      // Fallback to extended mock data
       setNewsItems(extendedMockNewsData);
       
       toast({
@@ -334,9 +336,28 @@ const IndustryNews: React.FC = () => {
             <div key={item.newsID} className="space-y-1">
               <h3 className="font-medium text-sm">{item.title}</h3>
               <p className="text-xs text-muted-foreground line-clamp-3">{item.summary}</p>
-              <div className="flex justify-between items-center text-[10px] text-muted-foreground mt-1">
-                <span>{new Date(item.date).toLocaleDateString()}</span>
-                <span>{item.source}</span>
+              <div className="flex flex-col text-[10px] text-muted-foreground mt-1">
+                <div className="flex justify-between items-center">
+                  <span>Published: {new Date(item.date).toLocaleDateString()}</span>
+                  <span className="flex items-center">
+                    {item.source}
+                    {item.sourceLink && (
+                      <a 
+                        href={item.sourceLink} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="ml-1 text-blue-500 hover:text-blue-700"
+                      >
+                        <ExternalLink className="h-3 w-3" />
+                      </a>
+                    )}
+                  </span>
+                </div>
+                {item.dateAdded && (
+                  <div className="text-[9px] text-muted-foreground">
+                    Added to database: {new Date(item.dateAdded).toLocaleDateString()} {new Date(item.dateAdded).toLocaleTimeString()}
+                  </div>
+                )}
               </div>
               {index < newsItems.length - 1 && <Separator className="my-2" />}
             </div>

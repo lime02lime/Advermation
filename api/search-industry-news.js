@@ -59,18 +59,22 @@ export default async function handler(req, res) {
               {
                 "newsID": "unique-id",
                 "title": "News title",
-                "summary": "Brief summary of the news",
-                "date": "ISO date string",
-                "source": "Source publication name"
+                "summary": "Brief summary of the news in 2-3 sentences",
+                "date": "ISO date string of when the news was published",
+                "source": "Source publication name",
+                "sourceLink": "URL to the original news source"
               }
             ]
-            Provide exactly 5 news items. Each news item must include all fields.`
+            Provide exactly 5 news items. Each news item must include all fields. Make sure the summary is 2-3 sentences long.
+            The date should be the actual publication date of the news article.
+            The sourceLink should be a valid URL to the original news source if available.`
           },
           {
             role: 'user',
             content: `Find the latest news and trends in delivery, transport and transport electrification. 
             Focus on major developments, innovations, and industry announcements.
-            Format your response strictly as JSON that can be parsed directly.`
+            Format your response strictly as JSON that can be parsed directly.
+            Make sure to include source links for each news item if available.`
           }
         ],
         temperature: 0.2,
@@ -108,10 +112,12 @@ export default async function handler(req, res) {
       // Parse the content as JSON
       newsItems = JSON.parse(content);
       
-      // Ensure each item has a newsID
+      // Add dateAdded field and ensure each item has a newsID
+      const now = new Date().toISOString();
       newsItems = newsItems.map(item => ({
         ...item,
-        newsID: item.newsID || uuidv4()
+        newsID: item.newsID || uuidv4(),
+        dateAdded: now
       }));
 
       // Save each news item to DynamoDB
