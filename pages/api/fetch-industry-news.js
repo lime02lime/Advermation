@@ -45,6 +45,9 @@ export default async function handler(req, res) {
     return res.status(200).json({ items: sortedItems });
   } catch (error) {
     console.error('Error in industry news API:', error);
-    return res.status(500).json({ error: error.message });
+    return res.status(500).json({ 
+      error: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
   }
 }

@@ -64,41 +64,57 @@ const IndustryNews: React.FC = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [errorDetails, setErrorDetails] = useState<string | null>(null);
+  const [usingMockData, setUsingMockData] = useState(false);
   
-  // Always use mock data in this demo version
   const fetchNews = async () => {
     setError(null);
     setErrorDetails(null);
+    setUsingMockData(false);
     
     try {
       setLoading(true);
       console.log('Fetching news data...');
       
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 800));
-      
-      // For the demo, we'll use extended mock data
-      setNewsItems(extendedMockNewsData);
-      
-      // Add info toast about using demo data
-      toast({
-        title: "Using demo data",
-        description: "This is a demonstration with sample news items. In production, this would connect to a real database.",
-        variant: "default"
+      // First try to fetch real data from API
+      const response = await fetch('/api/fetch-industry-news', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(`Failed to fetch industry news: ${response.status} ${errorData.error || 'Unknown error'}`);
+      }
+      
+      const data = await response.json();
+      
+      if (data.items && data.items.length > 0) {
+        setNewsItems(data.items);
+        toast({
+          title: "News loaded successfully",
+          description: "Latest industry news has been loaded from the database.",
+          variant: "default"
+        });
+      } else {
+        // If no items were returned, use mock data
+        throw new Error('No news items returned from database');
+      }
       
     } catch (error) {
       console.error('Error loading news:', error);
-      setError("Failed to load news data");
-      setErrorDetails("The demo data could not be loaded. Please try refreshing the page.");
+      setError("Unable to connect to the news database");
+      setErrorDetails("Using mock data instead. In production, this would connect to AWS DynamoDB.");
+      setUsingMockData(true);
       
-      // Fallback to basic mock data
-      setNewsItems(mockNewsData);
+      // Fallback to extended mock data
+      setNewsItems(extendedMockNewsData);
       
       toast({
-        title: "Error loading data",
-        description: "There was a problem loading the news items. Using fallback data.",
-        variant: "destructive"
+        title: "Using demo data",
+        description: "There was a problem connecting to the database. Using sample news items instead.",
+        variant: "default"
       });
     } finally {
       setLoading(false);
@@ -109,11 +125,6 @@ const IndustryNews: React.FC = () => {
   const handleRefresh = async () => {
     setRefreshing(true);
     await fetchNews();
-    toast({
-      title: "News refreshed",
-      description: "Latest industry news has been loaded.",
-      variant: "default"
-    });
   };
 
   useEffect(() => {
@@ -174,7 +185,9 @@ const IndustryNews: React.FC = () => {
         <CardTitle className="text-lg flex items-center">
           <Newspaper className="h-4 w-4 mr-2" />
           Industry News
-          <span className="ml-2 text-xs bg-yellow-100 text-yellow-800 px-1.5 py-0.5 rounded-md">Demo Data</span>
+          {usingMockData && (
+            <span className="ml-2 text-xs bg-yellow-100 text-yellow-800 px-1.5 py-0.5 rounded-md">Demo Data</span>
+          )}
         </CardTitle>
         <Button 
           variant="outline" 
@@ -202,10 +215,12 @@ const IndustryNews: React.FC = () => {
           <span>{errorDetails}</span>
         </div>
       )}
-      <div className="px-6 py-2 flex items-center text-xs text-emerald-800 bg-emerald-50 border-b border-emerald-100">
-        <Database className="h-3 w-3 mr-1" />
-        <span>This component is configured to use mock data for demonstration purposes. In production, connect to DynamoDB.</span>
-      </div>
+      {usingMockData && (
+        <div className="px-6 py-2 flex items-center text-xs text-emerald-800 bg-emerald-50 border-b border-emerald-100">
+          <Database className="h-3 w-3 mr-1" />
+          <span>Using mock data. To use real data, ensure AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY are set correctly.</span>
+        </div>
+      )}
       <CardContent className="px-4 py-2">
         <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2">
           {newsItems.map((item, index) => (
