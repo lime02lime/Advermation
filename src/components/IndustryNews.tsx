@@ -1,10 +1,9 @@
-
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { Newspaper, RefreshCw, AlertCircle, Info, Database } from 'lucide-react';
+import { Newspaper, RefreshCw, AlertCircle, Info, Database, Search } from 'lucide-react';
 
 interface NewsItem {
   newsID: string;
@@ -38,7 +37,6 @@ const mockNewsData: NewsItem[] = [
   }
 ];
 
-// Add additional mock data to have a larger dataset
 const extendedMockNewsData: NewsItem[] = [
   ...mockNewsData,
   {
@@ -62,20 +60,20 @@ const IndustryNews: React.FC = () => {
   const [newsItems, setNewsItems] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [searching, setSearching] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [errorDetails, setErrorDetails] = useState<string | null>(null);
   const [usingMockData, setUsingMockData] = useState(false);
   
-  const fetchNews = async () => {
+  const fetchNewsFromDb = async () => {
     setError(null);
     setErrorDetails(null);
     setUsingMockData(false);
     
     try {
-      setLoading(true);
-      console.log('Fetching news data...');
+      setRefreshing(true);
+      console.log('Fetching news data from DynamoDB...');
       
-      // First try to fetch real data from API
       const response = await fetch('/api/fetch-industry-news', {
         method: 'POST',
         headers: {
@@ -117,21 +115,73 @@ const IndustryNews: React.FC = () => {
         variant: "default"
       });
     } finally {
-      setLoading(false);
       setRefreshing(false);
+      setLoading(false);
     }
   };
 
-  const handleRefresh = async () => {
-    setRefreshing(true);
-    await fetchNews();
+  const searchNewsWithPerplexity = async () => {
+    setError(null);
+    setErrorDetails(null);
+    setUsingMockData(false);
+    
+    try {
+      setSearching(true);
+      console.log('Searching for news with Perplexity API...');
+      
+      const response = await fetch('/api/search-industry-news', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          query: 'recent news and industry trends in delivery, transport and transport electrification'
+        }),
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(`Failed to search industry news: ${response.status} ${errorData.error || 'Unknown error'}`);
+      }
+      
+      const data = await response.json();
+      
+      if (data.items && data.items.length > 0) {
+        setNewsItems(data.items);
+        toast({
+          title: "News search completed",
+          description: "Latest industry news has been fetched from Perplexity AI.",
+          variant: "default"
+        });
+      } else {
+        throw new Error('No news items returned from search');
+      }
+      
+    } catch (error) {
+      console.error('Error searching news:', error);
+      setError("Unable to search for news");
+      setErrorDetails("Using mock data instead. In production, this would use Perplexity AI API.");
+      setUsingMockData(true);
+      
+      // Fallback to extended mock data
+      setNewsItems(extendedMockNewsData);
+      
+      toast({
+        title: "Using demo data",
+        description: "There was a problem searching for news. Using sample news items instead.",
+        variant: "default"
+      });
+    } finally {
+      setSearching(false);
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
-    fetchNews();
+    fetchNewsFromDb();
   }, []);
 
-  if (loading && !refreshing) {
+  if (loading && !refreshing && !searching) {
     return (
       <Card className="w-full border shadow-sm">
         <CardHeader className="pb-2 flex flex-row items-center justify-between">
@@ -154,7 +204,7 @@ const IndustryNews: React.FC = () => {
     );
   }
 
-  if (newsItems.length === 0 && !loading) {
+  if (newsItems.length === 0 && !loading && !refreshing && !searching) {
     return (
       <Card className="w-full border shadow-sm">
         <CardHeader className="pb-2 flex flex-row items-center justify-between">
@@ -162,15 +212,26 @@ const IndustryNews: React.FC = () => {
             <Newspaper className="h-4 w-4 mr-2" />
             Industry News
           </CardTitle>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={handleRefresh}
-            disabled={refreshing}
-          >
-            <RefreshCw className="h-3.5 w-3.5 mr-1" />
-            Refresh
-          </Button>
+          <div className="flex space-x-2">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={fetchNewsFromDb}
+              disabled={refreshing || searching}
+            >
+              <Database className="h-3.5 w-3.5 mr-1" />
+              Load from DB
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={searchNewsWithPerplexity}
+              disabled={refreshing || searching}
+            >
+              <Search className="h-3.5 w-3.5 mr-1" />
+              Search News
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground">No industry news available at the moment.</p>
@@ -189,19 +250,34 @@ const IndustryNews: React.FC = () => {
             <span className="ml-2 text-xs bg-yellow-100 text-yellow-800 px-1.5 py-0.5 rounded-md">Demo Data</span>
           )}
         </CardTitle>
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={handleRefresh}
-          disabled={refreshing}
-        >
-          {refreshing ? (
-            <RefreshCw className="h-3.5 w-3.5 mr-1 animate-spin" />
-          ) : (
-            <RefreshCw className="h-3.5 w-3.5 mr-1" />
-          )}
-          Refresh
-        </Button>
+        <div className="flex space-x-2">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={fetchNewsFromDb}
+            disabled={refreshing || searching}
+          >
+            {refreshing ? (
+              <RefreshCw className="h-3.5 w-3.5 mr-1 animate-spin" />
+            ) : (
+              <Database className="h-3.5 w-3.5 mr-1" />
+            )}
+            Load from DB
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={searchNewsWithPerplexity}
+            disabled={refreshing || searching}
+          >
+            {searching ? (
+              <RefreshCw className="h-3.5 w-3.5 mr-1 animate-spin" />
+            ) : (
+              <Search className="h-3.5 w-3.5 mr-1" />
+            )}
+            Search News
+          </Button>
+        </div>
       </CardHeader>
       {error && (
         <div className="px-6 py-2 flex items-center text-xs text-amber-800 bg-amber-50 border-t border-b border-amber-100">
