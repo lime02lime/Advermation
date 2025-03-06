@@ -1,10 +1,8 @@
-
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { AlertCircle, Info, Database, ExternalLink, Newspaper, CheckCircle, Circle, RefreshCw } from 'lucide-react';
+import { AlertCircle, Info, Database, ExternalLink, Newspaper, CheckCircle, Circle } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface NewsItem {
@@ -73,7 +71,6 @@ const IndustryNews: React.FC<IndustryNewsProps> = ({ onSelectedNewsChange }) => 
   const { toast } = useToast();
   const [newsItems, setNewsItems] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [errorDetails, setErrorDetails] = useState<string | null>(null);
   const [usingMockData, setUsingMockData] = useState(false);
@@ -130,42 +127,6 @@ const IndustryNews: React.FC<IndustryNewsProps> = ({ onSelectedNewsChange }) => 
       });
     } finally {
       setLoading(false);
-    }
-  };
-  
-  const refreshNews = async () => {
-    setRefreshing(true);
-    try {
-      const response = await fetch('/api/search-industry-news', {
-        method: 'GET',
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to refresh news');
-      }
-      
-      const data = await response.json();
-      if (data.saved) {
-        toast({
-          title: "News refreshed successfully",
-          description: `Added ${data.savedCount} new news items to the database.`,
-          variant: "default"
-        });
-        
-        // Reload news from DB after refreshing
-        await fetchNewsFromDb();
-      } else {
-        throw new Error('No news saved to database');
-      }
-    } catch (error) {
-      console.error('Error refreshing news:', error);
-      toast({
-        title: "Error refreshing news",
-        description: "There was an error fetching fresh news. Please try again later.",
-        variant: "destructive"
-      });
-    } finally {
-      setRefreshing(false);
     }
   };
 
@@ -242,16 +203,6 @@ const IndustryNews: React.FC<IndustryNewsProps> = ({ onSelectedNewsChange }) => 
             </span>
           )}
         </CardTitle>
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={refreshNews} 
-          disabled={refreshing}
-          className="ml-2 h-8"
-        >
-          <RefreshCw className={`h-3.5 w-3.5 mr-1 ${refreshing ? 'animate-spin' : ''}`} />
-          {refreshing ? 'Refreshing...' : 'Refresh'}
-        </Button>
       </CardHeader>
       {error && (
         <div className="px-6 py-2 flex items-center text-xs text-amber-800 bg-amber-50 border-t border-b border-amber-100">
