@@ -18,11 +18,19 @@ const TABLE_NAME = 'fleeteNewsData';
 
 export default async function handler(req, res) {
   try {
-    if (req.method !== 'POST') {
+    // Accept both GET (for cron) and POST requests
+    if (req.method !== 'POST' && req.method !== 'GET') {
       return res.status(405).json({ error: 'Method not allowed' });
     }
 
-    const { query } = req.body;
+    // Default query for automated cron runs
+    const defaultQuery = "latest news in delivery, transport and electric vehicles industry";
+    
+    // Use the provided query for POST requests or the default for GET (cron) requests
+    const query = req.method === 'POST' && req.body && req.body.query 
+      ? req.body.query 
+      : defaultQuery;
+    
     const PERPLEXITY_API_KEY = process.env.PERPLEXITY_API_KEY;
 
     if (!PERPLEXITY_API_KEY) {
@@ -39,7 +47,7 @@ export default async function handler(req, res) {
       });
     }
 
-    console.log('Searching for news with Perplexity API using query:', query);
+    console.log(`Searching for news with Perplexity API using query: ${query}`);
 
     const response = await fetch('https://api.perplexity.ai/chat/completions', {
       method: 'POST',
@@ -70,7 +78,7 @@ export default async function handler(req, res) {
           },
           {
             role: 'user',
-            content: `Find the latest news and trends in delivery, transport and transport electrification. 
+            content: `Find the latest news and trends in delivery, transport and transport electrification from the past 24 hours if possible. 
             Focus on major developments, innovations, and industry announcements.
             Format your response strictly as JSON that can be parsed directly.
             Make sure to include source links for each news item if available.`
