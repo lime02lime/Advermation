@@ -14,16 +14,14 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
           <img 
             src="/lovable-uploads/a6ae9528-0b2b-4654-9ba0-79169e676648.png" 
             alt="Fleete Logo" 
-            width="50" 
-            height="50" 
-            className="mr-3"
+            className="h-10 object-contain mr-3"
           />
           <div className="flex flex-col items-start">
             <span className="text-xs uppercase tracking-wider text-[#71436d] font-medium">
               Internal Tool
             </span>
             <h1 className="text-2xl font-bold tracking-tight text-[#2b4a9a]">
-              Post<span className="text-[#8847ea]">Genius</span>
+              Fleete<span className="text-[#8847ea]">Advertising</span>
             </h1>
           </div>
         </div>
