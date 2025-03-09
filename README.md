@@ -19,7 +19,18 @@ The website has 3 central features:
 - News-focused post generation: users can select from a list of recent industry news/trends, which the post should incorporate
 
 ## Future work:
+**Image generation:**
+There are a few options for how this can be implemented.
+- GenAI image generation: Based on the output post and/or the user query, the "generate image" button will generate an image that can be attached with the social media post. This could be done using OpenAI's api or Stability AI api, for example.
+- Stock image fetching: If Fleete has a set of stock images that can be used, we can create a tool that automatically fetches relevant images for a post using RAG. We can tag each image with a vector embedding and a description (e.g. using CLIP), and then store these embeddings & descriptions and image IDs in a vector database to quickly find relevant images.
 
+**LinkedIn:**
+- Connection with LinkedIn or other social media API to schedule or manually post entries.
+- Use LinkedIn API to gather engagement data about posts - this can be saved together with the records of past posts to provide insights to optimise future post generation.
+
+**Other:**
+- Storage of previously generated posts.
+- Automatic daily search of industry news is set up to work - but requires for Vercel to be upgraded to a paid membership.
 
 ## What technologies are used for this project?
 
