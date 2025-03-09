@@ -12,7 +12,7 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
       <div className="flex items-center">
         <div className="flex items-center">
           <img 
-            src="public/a6ae9528-0b2b-4654-9ba0-79169e676648.png" 
+            src="a6ae9528-0b2b-4654-9ba0-79169e676648.png" 
             alt="Fleete Logo" 
             className="h-10 object-contain mr-3"
           />
