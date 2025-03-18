@@ -80,7 +80,7 @@ const CompanyInfoCard: React.FC = () => {
           <Separator />
           <CardFooter className="pt-3 pb-4 px-6">
             <div className="text-xs text-muted-foreground">
-              Fleete's company information is being used to generate relevant social media posts
+              ExampleCo's company information is being used to generate relevant social media posts
             </div>
           </CardFooter>
         </>

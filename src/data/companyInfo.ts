@@ -1,33 +1,32 @@
-
 // This file contains only the company information used across the application
 
 export const companyInfo = {
-  name: "Fleete",
-  description: "Fleete is your dedicated fleet electrification partner. We help remove every barrier to fleet electrification you can think of, providing end-to-end solutions from charging infrastructure to software and comprehensive support.",
-  industry: "Fleet Electrification and Management",
-  targetAudience: "Fleet operators, logistics companies, and businesses looking to transition their vehicle fleets to electric vehicles",
+  name: "ExampleCo",
+  description: "ExampleCo specializes in automating advertising by leveraging company-specific insights, industry news, and user input to generate high-quality, engaging marketing content.",
+  industry: "Automated Advertising and Marketing Technology",
+  targetAudience: "Businesses, marketing teams, and agencies looking to streamline content creation and optimize advertising strategies",
   uniqueSellingPoints: [
-    "Comprehensive Charging Infrastructure - scalable hubs and depot solutions",
-    "Advanced Software Integration - manage energy costs and optimize operations",
-    "End-to-end Electrification Support - from planning to management",
-    "Cost-Effective, Scalable Solutions - infrastructure that grows with your needs",
-    "Fleet-Only Focus - specializing exclusively in fleet electrification",
-    "Backed by Macquarie - supported by a global leader in sustainable infrastructure",
-    "Decades of Expertise - industry-leading knowledge in fleet management and energy systems"
+    "AI-Powered Content Generation - creates targeted ads based on company data and industry trends",
+    "Seamless Multi-Platform Integration - supports social media, blogs, and digital ads",
+    "User-Guided Customization - allows businesses to input specific themes or messaging",
+    "Automated Trend Monitoring - keeps ads relevant with the latest industry insights",
+    "Scalable and Cost-Effective - adapts to businesses of all sizes",
+    "Advanced Analytics - measures engagement and optimizes ad performance",
+    "Proven Success - helping brands grow with smart automation"
   ],
   solutions: [
     {
-      name: "Charging Hubs",
-      description: "Large-scale charging hubs designed exclusively for fleet operators with ultra-fast, reliable charging for heavy-duty vehicles and large-scale fleets."
+      name: "Dynamic Ad Generation",
+      description: "Automatically create and adapt advertising content based on company-specific data, user input, and real-time industry news."
     },
     {
-      name: "Depot Electrification",
-      description: "On-premises charging solutions customized for your fleet's unique requirements, ensuring seamless operations, reduced costs, and future-proof scalability."
+      name: "Content Optimization Engine",
+      description: "AI-driven insights to refine messaging, optimize performance, and increase engagement."
     },
     {
-      name: "Software Platform",
-      description: "State-of-the-art digital platform tailored for fleets to monitor energy use in real time, automate cost-saving charging schedules, and integrate with existing systems."
+      name: "Multi-Channel Deployment",
+      description: "Seamlessly publish content across various platforms, from social media to blogs and paid advertisements."
     }
   ],
-  tone: "Professional, expert, and supportive with a focus on simplifying complex transitions and providing reliable solutions"
+  tone: "Innovative, data-driven, and customer-focused, with a strong emphasis on automation and efficiency in digital marketing"
 };
