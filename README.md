@@ -1,3 +1,4 @@
+
 # DEMO PROJECT: postgenius @ ExampleCo
 
 **URL**: https://advermation.vercel.app/
@@ -41,4 +42,3 @@ This project is built with:
 - React
 - shadcn-ui
 - Tailwind CSS
-

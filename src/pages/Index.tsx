@@ -64,7 +64,7 @@ const Index = () => {
                 Internal Content Generator
               </h1>
               <p className="mt-4 text-lg text-[#71436d] max-w-xl mx-auto text-balance">
-                Create engaging social media content for Fleete with just a click
+                Create engaging social media content for ExampleCo with just a click
               </p>
             </div>
             
@@ -94,7 +94,7 @@ const Index = () => {
         
         <footer className="py-4 mt-auto border-t border-border/40 text-center text-sm text-[#2b4a9a] bg-white">
           <div className="max-w-6xl mx-auto px-4">
-            <p>© {new Date().getFullYear()} Fleete Internal Tools - PostGenius</p>
+            <p>© {new Date().getFullYear()} ExampleCo Internal Tools - PostGenius</p>
           </div>
         </footer>
       </div>

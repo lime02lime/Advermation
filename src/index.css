@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -121,23 +122,23 @@
     text-wrap: balance;
   }
   
-  .fleete-gradient-bg {
+  .exampleco-gradient-bg {
     background: linear-gradient(135deg, #9aedff 0%, #8847ea 100%);
   }
   
-  .fleete-card {
+  .exampleco-card {
     @apply bg-[#8847ea] text-white rounded-3xl p-6 shadow-lg;
   }
   
-  .fleete-button {
+  .exampleco-button {
     @apply bg-[#2b4a9a] hover:bg-[#2b4a9a]/90 text-white rounded-full py-3 px-6 font-medium transition-colors;
   }
   
-  .fleete-info-card {
+  .exampleco-info-card {
     @apply bg-white rounded-3xl p-6 shadow-md;
   }
   
-  .fleete-icon-bg {
+  .exampleco-icon-bg {
     @apply bg-[#9aedff] rounded-full p-3 inline-flex items-center justify-center;
   }
 }
