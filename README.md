@@ -1,5 +1,5 @@
 
-# DEMO PROJECT: postgenius @ ExampleCo
+# DEMO PROJECT: Advermation @ ExampleCo
 
 **URL**: https://advermation.vercel.app/
 

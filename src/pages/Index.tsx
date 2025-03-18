@@ -94,7 +94,7 @@ const Index = () => {
         
         <footer className="py-4 mt-auto border-t border-border/40 text-center text-sm text-[#2b4a9a] bg-white">
           <div className="max-w-6xl mx-auto px-4">
-            <p>© {new Date().getFullYear()} ExampleCo Internal Tools - PostGenius</p>
+            <p>© {new Date().getFullYear()} ExampleCo Internal Tools - Advermation</p>
           </div>
         </footer>
       </div>
