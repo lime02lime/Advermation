@@ -12,17 +12,17 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
       <div className="flex items-center">
         <div className="flex items-center">
           <div className="flex flex-col items-start">
-            <span className="text-xs uppercase tracking-wider text-[#71436d] font-medium">
+            <span className="text-xs uppercase tracking-wider text-[#2d4a6b] font-medium">
               Internal Tool
             </span>
-            <h1 className="text-2xl font-bold tracking-tight text-[#2b4a9a]">
-              ExampleCo's<span className="text-[#8847ea]">Advertising</span>
+            <h1 className="text-2xl font-bold tracking-tight text-[#3c5a86]">
+              ExampleCo's<span className="text-[#476b9c]">Advertising</span>
             </h1>
           </div>
         </div>
       </div>
       
-      <div className="text-sm font-medium text-[#71436d]">
+      <div className="text-sm font-medium text-[#2d4a6b]">
         Social Media Content Generator
       </div>
     </header>

@@ -54,16 +54,16 @@ const Index = () => {
 
   return (
     <CompanyProvider>
-      <div className="min-h-screen flex flex-col bg-[#9aedff]/30">
+      <div className="min-h-screen flex flex-col bg-[#e4edf5]/30">
         <Header className="bg-white shadow-sm" />
         
         <main className="flex-1 px-4 pb-8">
           <div className="max-w-6xl mx-auto w-full pt-8">
             <div className="text-center mb-8 animate-fade-in">
-              <h1 className="text-4xl font-bold tracking-tight text-balance text-[#2b4a9a]">
+              <h1 className="text-4xl font-bold tracking-tight text-balance text-[#3c5a86]">
                 Internal Content Generator
               </h1>
-              <p className="mt-4 text-lg text-[#71436d] max-w-xl mx-auto text-balance">
+              <p className="mt-4 text-lg text-[#2d4a6b] max-w-xl mx-auto text-balance">
                 Create engaging social media content for ExampleCo with just a click
               </p>
             </div>
@@ -92,7 +92,7 @@ const Index = () => {
           </div>
         </main>
         
-        <footer className="py-4 mt-auto border-t border-border/40 text-center text-sm text-[#2b4a9a] bg-white">
+        <footer className="py-4 mt-auto border-t border-border/40 text-center text-sm text-[#3c5a86] bg-white">
           <div className="max-w-6xl mx-auto px-4">
             <p>© {new Date().getFullYear()} ExampleCo Internal Tools - Advermation</p>
           </div>

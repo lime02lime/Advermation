@@ -13,10 +13,10 @@
   transition: filter 300ms;
 }
 .logo:hover {
-  filter: drop-shadow(0 0 2em #8847eaaa);
+  filter: drop-shadow(0 0 2em #476b9caa);
 }
 .logo.react:hover {
-  filter: drop-shadow(0 0 2em #9aedffaa);
+  filter: drop-shadow(0 0 2em #e4edf5aa);
 }
 
 @keyframes logo-spin {
@@ -43,21 +43,21 @@
 }
 
 .fleete-gradient {
-  background: linear-gradient(135deg, #9aedff 0%, #8847ea 100%);
+  background: linear-gradient(135deg, #e4edf5 0%, #476b9c 100%);
 }
 
 .fleete-blue-bg {
-  background-color: #2b4a9a;
+  background-color: #3c5a86;
 }
 
 .fleete-purple-bg {
-  background-color: #8847ea;
+  background-color: #476b9c;
 }
 
 .fleete-lightblue-bg {
-  background-color: #9aedff;
+  background-color: #e4edf5;
 }
 
 .fleete-darkpurple-bg {
-  background-color: #71436d;
+  background-color: #2d4a6b;
 }

@@ -64,10 +64,10 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
 				fleete: {
-					blue: '#2b4a9a',
-					purple: '#71436d',
-					brightpurple: '#8847ea',
-					lightblue: '#9aedff',
+					blue: '#3c5a86',
+					purple: '#2d4a6b',
+					brightpurple: '#476b9c',
+					lightblue: '#e4edf5',
 				}
 			},
 			borderRadius: {
