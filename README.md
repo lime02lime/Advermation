@@ -1,7 +1,7 @@
 
 # DEMO PROJECT: Advermation @ ExampleCo
 
-**URL**: https://advermation.vercel.app/
+**URL**: https://exampleco-advermation-git-main-lime02limes-projects.vercel.app/
 
 ## Overview
 This is a demo of a website for internal use at fictitious company ExampleCo, which allows users to generate engaging advertising content tailored to their business. The content is generated using the OpenAI GPT API, which is fed context information about the company, industry news, and user inputs.
