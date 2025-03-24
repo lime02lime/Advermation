@@ -55,12 +55,7 @@ export default async function handler(req, res) {
     - Tone: ${tone}
     - Description: ${companyDescription}
     
-    Use a few emojis throughout the post (around 4-5) to make it more engaging and eye-catching. Use emojis that relate to:
-    - Electric vehicles and charging (⚡🔌🚙🔋🚐)
-    - Environmental benefits (🌿🌱🌎♻️💚)
-    - Business and fleet operations (📈💼🚚🔄⏱️)
-    - Technology and innovation (💻📱📊🔍🤖)
-    - Company success and forward reach (🔥🌟🚀🏆📈)
+    Use a few emojis throughout the post (around 4-5) to make it more engaging and eye-catching.
     
     Make sure to distribute the emojis naturally throughout the text. You can put them at the very beginning and/or after sentences (IMPORTANT: emojis should be AFTER the punctuation marks).
     Only return the blog post text without any additional explanations.`;
@@ -73,7 +68,7 @@ export default async function handler(req, res) {
 
       Emphasize how ${companyName}'s solution addresses challenges or provides benefits related to this specific topic.
       
-      Be sure to mention which specific solution from our offerings (Charging Hubs, Depot Electrification, or Software Platform) best relates to this topic.`;
+      Be sure to mention which specific solution from our offerings best relates to this topic.`;
     }
 
     // Add selected news to the prompt if available
